@@ -84,7 +84,8 @@ Fetch the specific documentation page for the feature you're implementing. Not t
 
 ```
 BAD:  Fetch the React homepage
-GOOD: Fetch react.dev/reference/react/useActionState
+GOOD: Fetch docs.djangoproject.com/en/stable/topics/auth/
+GOOD: Fetch docs.python.org/3/library/asyncio-task.html#coroutines
 
 BAD:  Search "django authentication best practices"
 GOOD: Fetch docs.djangoproject.com/en/6.0/topics/auth/
@@ -107,13 +108,14 @@ Write code that matches what the documentation shows:
 
 ```
 CONFLICT DETECTED:
-The existing codebase uses useState for form loading state,
-but React 19 docs recommend useActionState for this pattern.
-(Source: react.dev/reference/react/useActionState)
+The existing codebase uses `subprocess.run()` for running external
+commands, but Python docs recommend `subprocess.run(..., check=True)`
+to propagate non-zero exit codes as exceptions.
+(Source: docs.python.org/3/library/subprocess.html)
 
 Options:
-A) Use the modern pattern (useActionState) — consistent with current docs
-B) Match existing code (useState) — consistent with codebase
+A) Use the modern pattern (check=True) — consistent with current docs
+B) Match existing code — consistent with codebase
 → Which approach do you prefer?
 ```
 
@@ -125,28 +127,28 @@ Every framework-specific pattern gets a citation. The user must be able to verif
 
 **In code comments:**
 
-```typescript
-// React 19 form handling with useActionState
-// Source: https://react.dev/reference/react/useActionState#usage
-const [state, formAction, isPending] = useActionState(submitOrder, initialState);
+```python
+# Python 3.7+ subprocess with check
+# Source: https://docs.python.org/3/library/subprocess.html#subprocess.run
+result = subprocess.run(["git", "status"], capture_output=True, text=True, check=True)
 ```
 
 **In conversation:**
 
 ```
-I'm using useActionState instead of manual useState for the
-form submission state. React 19 replaced the manual
-isPending/setIsPending pattern with this hook.
+I'm using `subprocess.run(check=True)` for the command execution.
+Without it, non-zero exit codes are silently ignored, which means
+the build system wouldn't detect failed commands.
 
-Source: https://react.dev/blog/2024/12/05/react-19#actions
-"useTransition now supports async functions [...] to handle
-pending states automatically"
+Source: https://docs.python.org/3/library/subprocess.html#subprocess.run
+"The CalledProcessError object will have the return code in the
+returncode attribute."
 ```
 
 **Citation rules:**
 
 - Full URLs, not shortened
-- Prefer deep links with anchors where possible (e.g. `/useActionState#usage` over `/useActionState`) — anchors survive doc restructuring better than top-level pages
+- Prefer deep links with anchors where possible (e.g. `#coroutines` over the top-level `asyncio-task.html`) — anchors survive doc restructuring better than top-level pages
 - Quote the relevant passage when it supports a non-obvious decision
 - Include browser/runtime support data when recommending platform features
 - If you cannot find documentation for a pattern, say so explicitly:

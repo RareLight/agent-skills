@@ -46,9 +46,25 @@ If you are starting a new session or are unsure which skill applies to the curre
 For every request:
 1. Determine if any skill aligns with the core intent of the request.
 2. Invoke the appropriate skill using the `skill` tool (required for IDE-integrated skills; works for project-local skills too) or by reading the local `SKILL.md` directly (project-local only).
-3. Assess the loaded skill against the current context. If the skill's own "When NOT to use" or abort conditions are met, or if it is deemed irrelevant upon full inspection, explicitly state the dismissal in the main agent and revert to the standard workflow described in the Workflow section below.
-4. If relevant, follow the skill workflow strictly.
-5. Only proceed to implementation after required steps (spec, plan, etc.) are complete.
+3. Detect the project's language/ecosystem from tooling config and load the matching `references/<lang>-patterns.md` if one exists (see Language-Specific References below). If no reference exists, proceed with the skill's built-in defaults — skill workflows are language-agnostic.
+4. Assess the loaded skill against the current context. If the skill's own "When NOT to use" or abort conditions are met, or if it is deemed irrelevant upon full inspection, explicitly state the dismissal in the main agent and revert to the standard workflow described in the Workflow section below.
+5. If relevant, follow the skill workflow strictly.
+6. Only proceed to implementation after required steps (spec, plan, etc.) are complete.
+
+### Language-Specific References
+
+Skill workflows are language-agnostic. Language-specific tooling, idioms, profiling, and security hazards are documented in `references/<lang>-patterns.md`. Load the matching reference when the project language is detected.
+
+**Available references:**
+
+| Language | Detection signals | Reference |
+|----------|-------------------|-----------|
+| Python | `pyproject.toml`, `requirements.txt`, `Pipfile`, `setup.py`, `poetry.lock` | `references/python-patterns.md` |
+| JavaScript/TypeScript | `package.json`, `tsconfig.json` | Built-in — skills and checklists default to JS/TS; see `references/testing-patterns.md` for testing |
+
+Any language works — Perl, Swift, C++, Rust, Go, or any other. Skill workflows describe processes (TDD, security review, deployment) that apply regardless of stack. If no dedicated reference exists for the detected language, proceed with the skill's built-in defaults and general engineering principles. To add support for a new language, create `references/<lang>-patterns.md` following the structure of `python-patterns.md`.
+
+**Language-specific review:** When reviewing code in a language with a dedicated reviewer persona (e.g., `python-reviewer`), use that persona for review tasks. Default to `code-reviewer` for languages without a dedicated reviewer.
 
 ## Tools (MCP Servers)
 

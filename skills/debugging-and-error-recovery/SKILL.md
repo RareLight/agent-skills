@@ -75,13 +75,13 @@ Cannot reproduce on demand:
 For test failures:
 ```bash
 # Run the specific failing test
-npm test -- --grep "test name"
+run the specific failing test
 
 # Run with verbose output
-npm test -- --verbose
+run the test suite with verbose output
 
 # Run in isolation (rules out test pollution)
-npm test -- --testPathPattern="specific-file" --runInBand
+run the specific test file in isolation
 ```
 
 ### Step 2: Localize
@@ -105,7 +105,7 @@ git bisect start
 git bisect bad                    # Current commit is broken
 git bisect good <known-good-sha> # This commit worked
 # Git will checkout midpoint commits; run your test at each
-git bisect run npm test -- --grep "failing test"
+git bisect run run the specific failing test
 ```
 
 ### Step 3: Reduce
@@ -157,16 +157,16 @@ After fixing, verify the complete scenario:
 
 ```bash
 # Run the specific test
-npm test -- --grep "specific test"
+run the specific test
 
 # Run the full test suite (check for regressions)
-npm test
+run the project's test suite
 
 # Build the project (check for type/compilation errors)
-npm run build
+build the project
 
 # Manual spot check if applicable
-npm run dev  # Verify in browser
+run the development server  # Verify in browser
 ```
 
 ## Error-Specific Patterns
@@ -192,7 +192,7 @@ Build fails:
 ├── Type error → Read the error, check the types at the cited location
 ├── Import error → Check the module exists, exports match, paths are correct
 ├── Config error → Check build config files for syntax/schema issues
-├── Dependency error → Check package.json, run npm install
+├── Dependency error → Check package.json, run install dependencies
 └── Environment error → Check Node version, OS compatibility
 ```
 

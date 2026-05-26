@@ -25,17 +25,20 @@ Task arrives
     │   ├── API work? ────────────────→ api-and-interface-design
     │   ├── Need better context? ─────→ context-engineering
     │   ├── Need doc-verified code? ───→ source-driven-development
-    │   └── Stakes high / unfamiliar code? ──→ doubt-driven-development
+    │   ├── Stakes high / unfamiliar code? ──→ doubt-driven-development
+    │   └── Handling failures/resilience? ──→ error-handling-and-resilience
     ├── Writing/running tests? ────────→ test-driven-development
     │   └── Browser-based? ───────────→ browser-testing-with-devtools
     ├── Something broke? ──────────────→ debugging-and-error-recovery
     ├── Reviewing code? ───────────────→ code-review-and-quality
     │   ├── Security concerns? ───────→ security-and-hardening
-    │   └── Performance concerns? ────→ performance-optimization
+    │   ├── Performance concerns? ────→ performance-optimization
+    │   └── Code hard to read/maintain? → code-simplification
     ├── Committing/branching? ─────────→ git-workflow-and-versioning
     ├── CI/CD pipeline work? ──────────→ ci-cd-and-automation
     ├── Writing docs/ADRs? ───────────→ documentation-and-adrs
-    └── Deploying/launching? ─────────→ shipping-and-launch
+    ├── Deploying/launching? ─────────→ shipping-and-launch
+    └── Removing or migrating old code? → deprecation-and-migration
 ```
 
 ## Skill Rules
@@ -57,14 +60,17 @@ For a complete feature, the typical skill sequence is:
 6.  source-driven-development   → Verify against official docs
 7.  incremental-implementation  → Build slice by slice
 8.  doubt-driven-development    → Cross-examine non-trivial decisions in-flight
-9.  test-driven-development     → Prove each slice works
-10. code-review-and-quality     → Review before merge
-11. git-workflow-and-versioning → Clean commit history
-12. documentation-and-adrs      → Document decisions
-13. shipping-and-launch         → Deploy safely
+9.  error-handling-and-resilience → Design resilience: retries, breakers, degradation
+10. test-driven-development     → Prove each slice works
+11. code-review-and-quality     → Review before merge
+12. code-simplification         → Simplify for clarity (ongoing)
+13. git-workflow-and-versioning → Clean commit history
+14. documentation-and-adrs      → Document decisions
+15. shipping-and-launch         → Deploy safely
+16. deprecation-and-migration   → Sunset old APIs and migrate users
 ```
 
-Not every task needs every skill. A bug fix might only need: `debugging-and-error-recovery` → `test-driven-development` → `code-review-and-quality`.
+Not every task needs every skill. A bug fix might only need: `debugging-and-error-recovery` → `test-driven-development` → `code-review-and-quality`. Simplification and deprecation are ongoing maintenance activities applied as needed.
 
 ## Quick Reference
 
@@ -77,6 +83,7 @@ Not every task needs every skill. A bug fix might only need: `debugging-and-erro
 | Build | incremental-implementation | Thin vertical slices, test each before expanding |
 | Build | source-driven-development | Verify against official docs before implementing |
 | Build | doubt-driven-development | Adversarial fresh-context review of every non-trivial decision |
+| Build | error-handling-and-resilience | Retry, circuit breakers, graceful degradation, dead letter queues |
 | Build | context-engineering | Right context at the right time |
 | Build | frontend-ui-engineering | Production-quality UI with accessibility |
 | Build | api-and-interface-design | Stable interfaces with clear contracts |
@@ -86,7 +93,9 @@ Not every task needs every skill. A bug fix might only need: `debugging-and-erro
 | Review | code-review-and-quality | Five-axis review with quality gates |
 | Review | security-and-hardening | OWASP prevention, input validation, least privilege |
 | Review | performance-optimization | Measure first, optimize only what matters |
+| Review | code-simplification | Refactor for clarity without changing behavior |
 | Ship | git-workflow-and-versioning | Atomic commits, clean history |
 | Ship | ci-cd-and-automation | Automated quality gates on every change |
 | Ship | documentation-and-adrs | Document the why, not just the what |
 | Ship | shipping-and-launch | Pre-launch checklist, monitoring, rollback plan |
+| Maintain | deprecation-and-migration | Remove old APIs, migrate users, sunset legacy systems |

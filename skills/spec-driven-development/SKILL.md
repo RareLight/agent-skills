@@ -54,10 +54,10 @@ Don't silently fill in ambiguous requirements. The spec's entire purpose is to s
 
 2. **Commands** — Full executable commands with flags, not just tool names.
    ```
-   Build: npm run build
-   Test: npm test -- --coverage
-   Lint: npm run lint --fix
-   Dev: npm run dev
+   Build: build the project
+   Test: run the test suite with coverage
+   Lint: run the linter with auto-fix
+   Dev: run the development server
    ```
 
 3. **Project Structure** — Where source code lives, where tests go, where docs belong.

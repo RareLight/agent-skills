@@ -32,7 +32,7 @@ Ship with confidence. The goal is not just to deploy — it's to deploy safely, 
 ### Security
 
 - [ ] No secrets in code or version control
-- [ ] `npm audit` shows no critical or high vulnerabilities
+- [ ] `run dependency audit` shows no critical or high vulnerabilities
 - [ ] Input validation on all user-facing endpoints
 - [ ] Authentication and authorization checks in place
 - [ ] Security headers configured (CSP, HSTS, etc.)
@@ -73,6 +73,79 @@ Ship with confidence. The goal is not just to deploy — it's to deploy safely, 
 - [ ] ADRs written for any architectural decisions
 - [ ] Changelog updated
 - [ ] User-facing documentation updated (if applicable)
+
+## Observability
+
+Production systems must be observable — you should be able to answer "is it working?" and "what broke?" without SSH-ing into a server. Implement three pillars before launch, not after.
+
+### Structured Logging
+
+```python
+import structlog
+
+logger = structlog.get_logger()
+
+# Structured — every field is queryable
+logger.info("payment_processed",
+    order_id=order.id,
+    amount=order.total,
+    duration_ms=duration,
+    gateway=gateway_name,
+)
+
+# Bad: Unstructured, unsearchable
+logger.info(f"Processed payment for order {order.id} with amount {order.total}")
+```
+
+### Metrics (RED Method)
+
+The RED method covers the three essential signals for every service endpoint:
+
+| Signal | Question | Example metric |
+|--------|----------|---------------|
+| **Rate** | How many requests? | `requests_total{endpoint="/api/orders"}` |
+| **Errors** | How many failed? | `errors_total{endpoint="/api/orders", status="500"}` |
+| **Duration** | How fast? | `request_duration_seconds{quantile="0.95"}` |
+
+Additionally: saturation (queue depth, connection pool usage) and business metrics (orders placed, users registered).
+
+### Distributed Tracing
+
+For systems with multiple services, tracing connects requests across service boundaries:
+
+```
+   Client → API Gateway → Auth Service → Order Service → Payment Service → Database
+           └────────────── trace_id: abc123 ──────────────────────────────────┘
+                           (same trace across all spans)
+```
+
+### Alerting Strategy
+
+Alerts should be **actionable** — if an alert fires and no one needs to wake up, it's noise. Structure by severity:
+
+| Severity | Response | Trigger |
+|----------|----------|---------|
+| P1 — Critical | Immediate page | Error rate > 5%, health check failing, data loss risk |
+| P2 — High | Within 1 hour | Error rate > 1%, p95 latency > 2x normal, queue depth growing |
+| P3 — Medium | Next business day | Disk > 80%, certificate expiring within 30 days, deprecation warnings |
+| P4 — Info | Dashboard only | New deployment, feature flag change, traffic shift |
+
+**Rules:**
+- Every alert must link to a runbook (playbook for diagnosis and mitigation)
+- Alerts that fire > 1 time per week without action must be tuned or removed
+- Error budgets define how much failure is acceptable before freezing feature velocity
+
+### Launch Monitoring Dashboard
+
+Before launch, create a dashboard with:
+
+- [ ] Request rate and error rate per endpoint (last 1h, 24h, 7d)
+- [ ] p50/p95/p99 latency per endpoint
+- [ ] Database connection pool usage and query latency
+- [ ] Cache hit rate (if applicable)
+- [ ] Queue depth and consumer lag (if applicable)
+- [ ] Business metrics for the launched feature (signups, purchases, etc.)
+- [ ] Link to error tracking (Sentry, Rollbar, etc.) filtered for the new feature
 
 ## Feature Flag Strategy
 
@@ -187,37 +260,22 @@ Client metrics:
 
 ### Error Reporting
 
-```typescript
-// Set up error boundary with reporting
-class ErrorBoundary extends React.Component {
-  componentDidCatch(error: Error, info: React.ErrorInfo) {
-    // Report to error tracking service
-    reportError(error, {
-      componentStack: info.componentStack,
-      userId: getCurrentUser()?.id,
-      page: window.location.pathname,
-    });
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return <ErrorFallback onRetry={() => this.setState({ hasError: false })} />;
-    }
-    return this.props.children;
-  }
-}
-
-// Server-side error reporting
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  reportError(err, {
-    method: req.method,
-    url: req.url,
-    userId: req.user?.id,
+```js
+// Global error handler — catches unhandled errors anywhere on the page
+window.addEventListener('error', (event) => {
+  reportError({
+    message: event.message,
+    source: event.filename,
+    line: event.lineno,
+    page: window.location.pathname,
   });
+});
 
-  // Don't expose internals to users
-  res.status(500).json({
-    error: { code: 'INTERNAL_ERROR', message: 'Something went wrong' },
+// Promise rejections without .catch()
+window.addEventListener('unhandledrejection', (event) => {
+  reportError({
+    message: event.reason?.message || String(event.reason),
+    page: window.location.pathname,
   });
 });
 ```
@@ -255,7 +313,7 @@ Every deployment needs a rollback plan before it happens:
 3. Communicate: notify team of rollback
 
 ### Database Considerations
-- Migration [X] has a rollback: `npx prisma migrate rollback`
+- Migration [X] has a rollback: `rollback database migration`
 - Data inserted by new feature: [preserved / cleaned up]
 
 ### Time to Rollback

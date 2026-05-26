@@ -198,17 +198,17 @@ One-paragraph description of what this project does.
 
 ## Quick Start
 1. Clone the repo
-2. Install dependencies: `npm install`
+2. Install dependencies: `install dependencies`
 3. Set up environment: `cp .env.example .env`
-4. Run the dev server: `npm run dev`
+4. Run the dev server: `run the development server`
 
 ## Commands
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Start development server |
-| `npm test` | Run tests |
-| `npm run build` | Production build |
-| `npm run lint` | Run linter |
+| `run the development server` | Start development server |
+| `run the project's test suite` | Run tests |
+| `build the project` | Production build |
+| `run the linter` | Run linter |
 
 ## Architecture
 Brief overview of the project structure and key design decisions.

@@ -151,3 +151,47 @@ onINP(({ value, attribution }) => {
 | Large bundles | Slow Time to Interactive | Code split, tree shake, audit deps |
 | Blocking main thread | Poor INP, unresponsive UI | Chunk long tasks with `scheduler.yield()` / `yieldToMain`, offload to Web Workers |
 | Memory leaks | Growing memory, eventual crash | Clean up listeners, intervals, refs |
+
+## Python Backend Checklist
+
+> See also `references/python-patterns.md` for code examples on concurrency, GIL, and profiling.
+
+### Async Safety
+- [ ] No synchronous blocking calls inside async coroutines (sync DB queries, `requests.get`, sync file I/O)
+- [ ] Blocking I/O offloaded via `loop.run_in_executor()` when async libraries aren't available
+- [ ] `asyncio.run()` used only at entry points (never nested inside another event loop)
+- [ ] Coroutine objects always awaited (dangling coroutines are silent bugs)
+- [ ] Async-compatible database drivers used (asyncpg, aiosqlite) rather than sync wrappers
+
+### Concurrency Model
+- [ ] I/O-bound work uses `asyncio` (or `ThreadPoolExecutor` for sync libraries)
+- [ ] CPU-bound work uses `ProcessPoolExecutor` (not threads — limited by GIL)
+- [ ] C extensions that release the GIL identified and leveraged for parallelism (NumPy, Cython)
+
+### Profiling
+
+```bash
+# cProfile — function-level CPU profiling
+python -m cProfile -s cumulative myapp/main.py
+
+# Sampling profiler for running processes (no instrumentation)
+py-spy top --pid <PID>
+py-spy record -o profile.svg --pid <PID>
+
+# Line-by-line profiling
+kernprof -l -v myapp/main.py
+
+# Memory profiling
+python -m memory_profiler myapp/main.py
+```
+
+### Django/ORM Specific
+- [ ] QuerySets use `select_related()` (FK/OneToOne) and `prefetch_related()` (M2M/reverse FK) to prevent N+1
+- [ ] `QuerySet.only()` or `defer()` used when models have large unused fields
+- [ ] `QuerySet.iterator()` considered for large result sets to avoid loading all objects into memory
+- [ ] `bulk_create()` and `bulk_update()` used instead of loops of individual saves
+
+### Data Processing
+- [ ] Generators used for large datasets (yield items one at a time vs materializing lists)
+- [ ] `itertools` module leveraged for memory-efficient pipelines
+- [ ] Pandas/NumPy vectorized operations preferred over Python-level loops

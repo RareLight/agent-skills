@@ -214,29 +214,51 @@ const tasks = await db.tasks.findMany({
 />
 ```
 
-#### Unnecessary Re-renders (React)
+#### Unnecessary DOM Updates
 
-```tsx
-// BAD: Creates new object on every render, causing children to re-render
-function TaskList() {
-  return <TaskFilters options={{ sortBy: 'date', order: 'desc' }} />;
+```js
+// BAD: Force layout recalculation in a loop
+function updateTasks(taskList) {
+  for (const task of taskList) {
+    element.textContent = task.label;   // Triggers layout per iteration
+    element.style.width = task.pct + '%';
+  }
 }
 
-// GOOD: Stable reference
-const DEFAULT_OPTIONS = { sortBy: 'date', order: 'desc' } as const;
-function TaskList() {
-  return <TaskFilters options={DEFAULT_OPTIONS} />;
+// GOOD: Batch reads and writes
+function updateTasks(taskList) {
+  const values = taskList.map(t => ({ label: t.label, pct: t.pct }));
+  requestAnimationFrame(() => {
+    for (const [i, val] of values.entries()) {
+      elements[i].textContent = val.label;
+      elements[i].style.width = val.pct + '%';
+    }
+  });
+}
+```
+
+**Debounce expensive handlers:**
+
+```js
+function debounce(fn, delay) {
+  let timer;
+  return (...args) => { clearTimeout(timer); timer = setTimeout(fn, delay, ...args); };
 }
 
-// Use React.memo for expensive components
-const TaskItem = React.memo(function TaskItem({ task }: Props) {
-  return <div>{/* expensive render */}</div>;
-});
+window.addEventListener('resize', debounce(recalculateLayout, 150));
+```
 
-// Use useMemo for expensive computations
-function TaskStats({ tasks }: Props) {
-  const stats = useMemo(() => calculateStats(tasks), [tasks]);
-  return <div>{stats.completed} / {stats.total}</div>;
+**Cache computed results outside the render path:**
+
+```js
+// Compute once, reuse
+const SORTED_CACHE = new Map();
+function getSorted(items, key) {
+  const cacheKey = JSON.stringify(key);
+  if (!SORTED_CACHE.has(cacheKey)) {
+    SORTED_CACHE.set(cacheKey, [...items].sort(byKey(key)));
+  }
+  return SORTED_CACHE.get(cacheKey);
 }
 ```
 
@@ -306,15 +328,27 @@ Lighthouse Performance score: ≥ 90
 **Enforce in CI:**
 ```bash
 # Bundle size check
-npx bundlesize --config bundlesize.config.json
+check bundle size against thresholds
 
 # Lighthouse CI
-npx lhci autorun
+run Lighthouse CI audit
 ```
 
 ## See Also
 
 For detailed performance checklists, optimization commands, and anti-pattern reference, see `references/performance-checklist.md`.
+
+### Python Backend Guidance
+
+Python-specific performance patterns not covered above. See `references/python-patterns.md` for code examples and `references/performance-checklist.md` for the full Python backend checklist.
+
+**Key watchpoints:**
+
+- **Event loop blocking:** Synchronous calls (sync DB queries, `requests.get`, sync file I/O) inside async coroutines block the entire event loop. Offload to `loop.run_in_executor()` or use async-compatible libraries.
+- **GIL-bound CPU work:** Threading does not provide parallelism for CPU-intensive code. Use `ProcessPoolExecutor` or C extensions.
+- **Profiling tooling:** Replace DevTools/Lighthouse with `cProfile`, `py-spy`, `line_profiler`, or `memory_profiler`.
+- **Django N+1:** Use `select_related()` / `prefetch_related()` instead of eager loading config — the Django ORM equivalent of the N+1 anti-pattern above.
+- **Missing indexes:** Same principle as the Backend checklist above; applies identically to SQLAlchemy, Django ORM, Peewee, etc.
 
 
 ## Common Rationalizations
@@ -335,7 +369,7 @@ For detailed performance checklists, optimization commands, and anti-pattern ref
 - Images without dimensions, lazy loading, or responsive sizes
 - Bundle size growing without review
 - No performance monitoring in production
-- `React.memo` and `useMemo` everywhere (overusing is as bad as underusing)
+- Premature optimization without profiling data to justify it
 
 ## Verification
 

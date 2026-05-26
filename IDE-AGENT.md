@@ -12,7 +12,7 @@ Use the `skill` tool to load workflow skills when a task matches a skill's descr
 
 ## Tools
 
-- **Native IDE tools** (read, write, edit, bash, grep, glob, task) for file I/O, git, and CLI operations.
+- **Native IDE tools** (read, write, edit, bash, grep, glob, task) for file I/O, git, and basic CLI operations.
 - **MCP server tools** for specialized domains (databases, browsers, APIs, knowledge graphs, etc.).
 
 ## Safety

@@ -270,28 +270,25 @@ def process(data):
     return do_work(data)
 ```
 
-### React / JSX
+### HTML / Templates
 
-```tsx
-// SIMPLIFY: Verbose conditional rendering
-// Before
-function UserBadge({ user }: Props) {
-  if (user.isAdmin) {
-    return <Badge variant="admin">Admin</Badge>;
-  } else {
-    return <Badge variant="default">User</Badge>;
-  }
-}
-// After
-function UserBadge({ user }: Props) {
-  const variant = user.isAdmin ? 'admin' : 'default';
-  const label = user.isAdmin ? 'Admin' : 'User';
-  return <Badge variant={variant}>{label}</Badge>;
-}
+```html
+<!-- SIMPLIFY: Verbose conditional rendering -->
+<!-- Before -->
+{% if user.is_admin %}
+  <span class="badge badge-admin">Admin</span>
+{% else %}
+  <span class="badge">User</span>
+{% endif %}
 
-// SIMPLIFY: Prop drilling through intermediate components
-// Before — consider whether context or composition solves this better.
-// This is a judgment call — flag it, don't auto-refactor.
+<!-- After -->
+<span class="badge {% if user.is_admin %}badge-admin{% endif %}">
+  {{ 'Admin' if user.is_admin else 'User' }}
+</span>
+
+<!-- SIMPLIFY: Flag, don't auto-refactor prop drilling -->
+<!-- If you see data passed through 3+ layers of templates,
+     consider restructuring rather than adding another parameter -->
 ```
 
 ## Common Rationalizations

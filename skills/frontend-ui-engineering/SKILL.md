@@ -25,93 +25,100 @@ Colocate everything related to a component:
 
 ```
 src/components/
-  TaskList/
-    TaskList.tsx          # Component implementation
-    TaskList.test.tsx     # Tests
-    TaskList.stories.tsx  # Storybook stories (if using)
-    use-task-list.ts      # Custom hook (if complex state)
-    types.ts              # Component-specific types (if needed)
+  task-list/
+    task-list.html          # Component markup
+    task-list.css           # Component styles
+    task-list.js            # Component logic
+    task-list.test.js       # Tests
 ```
 
 ### Component Patterns
 
 **Prefer composition over configuration:**
 
-```tsx
-// Good: Composable
-<Card>
-  <CardHeader>
-    <CardTitle>Tasks</CardTitle>
-  </CardHeader>
-  <CardBody>
-    <TaskList tasks={tasks} />
-  </CardBody>
-</Card>
+```html
+<!-- Good: Composable -->
+<article class="card">
+  <header class="card-header">
+    <h2 class="card-title">Tasks</h2>
+  </header>
+  <div class="card-body">
+    <task-list></task-list>
+  </div>
+</article>
 
-// Avoid: Over-configured
-<Card
-  title="Tasks"
-  headerVariant="large"
-  bodyPadding="md"
-  content={<TaskList tasks={tasks} />}
-/>
+<!-- Avoid: Over-configured -->
+<div class="card card--large card--padded" data-title="Tasks" data-body="task-list"></div>
 ```
 
 **Keep components focused:**
 
-```tsx
-// Good: Does one thing
-export function TaskItem({ task, onToggle, onDelete }: TaskItemProps) {
-  return (
-    <li className="flex items-center gap-3 p-3">
-      <Checkbox checked={task.done} onChange={() => onToggle(task.id)} />
-      <span className={task.done ? 'line-through text-muted' : ''}>{task.title}</span>
-      <Button variant="ghost" size="sm" onClick={() => onDelete(task.id)}>
-        <TrashIcon />
-      </Button>
-    </li>
-  );
-}
+```html
+<!-- Good: Does one thing -->
+<li class="task-item">
+  <label>
+    <input type="checkbox" checked> Buy groceries
+  </label>
+  <button class="btn-ghost btn-sm" aria-label="Delete task">
+    <span class="icon-trash"></span>
+  </button>
+</li>
 ```
 
 **Separate data fetching from presentation:**
 
-```tsx
-// Container: handles data
-export function TaskListContainer() {
-  const { tasks, isLoading, error } = useTasks();
+```js
+// Data layer: handles fetching and state
+async function loadTaskList() {
+  const container = document.getElementById('task-list-container');
 
-  if (isLoading) return <TaskListSkeleton />;
-  if (error) return <ErrorState message="Failed to load tasks" retry={refetch} />;
-  if (tasks.length === 0) return <EmptyState message="No tasks yet" />;
-
-  return <TaskList tasks={tasks} />;
+  try {
+    container.innerHTML = renderSkeleton();
+    const tasks = await fetchTasks();
+    if (tasks.length === 0) {
+      container.innerHTML = renderEmptyState();
+    } else {
+      container.innerHTML = renderTaskList(tasks);
+    }
+  } catch (err) {
+    container.innerHTML = renderErrorState(err, () => loadTaskList());
+  }
 }
 
 // Presentation: handles rendering
-export function TaskList({ tasks }: { tasks: Task[] }) {
-  return (
-    <ul role="list" className="divide-y">
-      {tasks.map(task => <TaskItem key={task.id} task={task} />)}
-    </ul>
-  );
+function renderTaskList(tasks) {
+  return `<ul role="list" class="divide-y">
+    ${tasks.map(task => `
+      <li class="task-item">
+        <label>
+          <input type="checkbox" ${task.done ? 'checked' : ''}>
+          <span class="${task.done ? 'line-through muted' : ''}">${escapeHtml(task.title)}</span>
+        </label>
+        <button class="btn-ghost btn-sm" aria-label="Delete ${escapeHtml(task.title)}">
+          <span class="icon-trash"></span>
+        </button>
+      </li>
+    `).join('')}
+  </ul>`;
 }
 ```
+
+Keep presentation functions pure — they receive data and return HTML. Data fetching, caching, and error handling live in a separate layer.
 
 ## State Management
 
 **Choose the simplest approach that works:**
 
 ```
-Local state (useState)           → Component-specific UI state
-Lifted state                     → Shared between 2-3 sibling components
-Context                          → Theme, auth, locale (read-heavy, write-rare)
-URL state (searchParams)         → Filters, pagination, shareable UI state
-Server state (React Query, SWR)  → Remote data with caching
-Global store (Zustand, Redux)    → Complex client state shared app-wide
+DOM state (data-*, classList)    → Component-specific UI state (open/closed, active/inactive)
+Module-level variable            → Shared between sibling components scoped to a feature
+Event-driven (CustomEvent)       → Loose coupling between unrelated components
+URL state (searchParams, hash)   → Filters, pagination, shareable UI state
+localStorage / IndexedDB         → Client-side persistence across sessions
+Server state (fetch + cache)     → Remote data with caching layer
 ```
 
-**Avoid prop drilling deeper than 3 levels.** If you're passing props through components that don't use them, introduce context or restructure the component tree.
+**Avoid tight coupling.** If one component needs to reach into another component's internals, introduce an event or a shared data module. Don't query `.parentElement` to find siblings.
 
 ## Design System Adherence
 
@@ -168,127 +175,171 @@ Every component must meet these standards:
 
 ### Keyboard Navigation
 
-```tsx
-// Every interactive element must be keyboard accessible
-<button onClick={handleClick}>Click me</button>        // ✓ Focusable by default
-<div onClick={handleClick}>Click me</div>               // ✗ Not focusable
-<div role="button" tabIndex={0} onClick={handleClick}    // ✓ But prefer <button>
-     onKeyDown={e => {
-       if (e.key === 'Enter') handleClick();
-       if (e.key === ' ') e.preventDefault();
-     }}
-     onKeyUp={e => {
-       if (e.key === ' ') handleClick();
-     }}>
+```html
+<!-- Every interactive element must be keyboard accessible -->
+<button onclick="handleClick()">Click me</button>              <!-- ✓ Focusable by default -->
+<div onclick="handleClick()">Click me</div>                    <!-- ✗ Not focusable -->
+<div role="button" tabindex="0"                                <!-- ✓ But prefer <button> -->
+     onclick="handleClick()"
+     onkeydown="if(event.key==='Enter'||event.key===' ') handleClick()">
   Click me
 </div>
 ```
 
 ### ARIA Labels
 
-```tsx
-// Label interactive elements that lack visible text
-<button aria-label="Close dialog"><XIcon /></button>
+```html
+<!-- Label interactive elements that lack visible text -->
+<button aria-label="Close dialog">
+  <span class="icon-x"></span>
+</button>
 
-// Label form inputs
-<label htmlFor="email">Email</label>
+<!-- Label form inputs -->
+<label for="email">Email</label>
 <input id="email" type="email" />
 
-// Or use aria-label when no visible label exists
+<!-- Or use aria-label when no visible label exists -->
 <input aria-label="Search tasks" type="search" />
 ```
 
 ### Focus Management
 
-```tsx
+```js
 // Move focus when content changes
-function Dialog({ isOpen, onClose }: DialogProps) {
-  const closeRef = useRef<HTMLButtonElement>(null);
+function openDialog(dialogId) {
+  const dialog = document.getElementById(dialogId);
+  dialog.showModal();
+  dialog.querySelector('button').focus();  // Focus the first button
 
-  useEffect(() => {
-    if (isOpen) closeRef.current?.focus();
-  }, [isOpen]);
-
-  // Trap focus inside dialog when open
-  return (
-    <dialog open={isOpen}>
-      <button ref={closeRef} onClick={onClose}>Close</button>
-      {/* dialog content */}
-    </dialog>
-  );
+  // Trap focus inside dialog
+  dialog.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') trapFocus(e, dialog);
+  });
 }
 ```
 
+### Accessibility Testing
+
+Component-level patterns are necessary but not sufficient — runtime verification proves accessibility. Use a layered testing strategy:
+
+**Layer 1: Automated (CI)**
+
+Run on every commit. Catches ~30% of issues:
+
+- [ ] **axe DevTools browser extension:** Right-click → Inspect → axe DevTools tab → scan for violations
+- [ ] **Lighthouse audit:** Chrome DevTools → Lighthouse tab → check accessibility score (target ≥90)
+- [ ] **HTML validation:** Validators catch unlabeled inputs, heading hierarchy skips, and missing alt text
+- [ ] **Browser console:** Watch for accessibility-related warnings during development
+
+**Layer 2: Manual Keyboard Audit (per release)**
+
+Catches ~50% of issues. A human runs through these steps without touching a mouse:
+
+```
+1. TAB through the entire page → every interactive element receives focus
+2. SHIFT+TAB back → focus order matches visual order (no traps, no skips)
+3. ENTER/Space activates focused elements → buttons, links, toggles all respond
+4. ESC closes modals, popups, dropdowns → focus returns to trigger element
+5. Arrow keys navigate within composite widgets → tabs, lists, menus
+6. Form submission → errors are announced and focus moves to first error field
+```
+
+**Layer 3: Screen Reader Testing (per feature)**
+
+Catches ~80% of issues when combined with keyboard audit. Use VoiceOver (macOS), NVDA (Windows), or JAWS:
+
+```
+Screen reader test script:
+1. Navigate by headings (rotor/menu) → page structure makes sense
+2. Read through linearly → content order matches visual order
+3. Interact with dynamic content → live regions announce changes
+4. Submit a form with errors → error messages are read and linked to fields
+5. Tab through → every focused element announces its name, role, and state
+```
+
+**Common failures and fixes:**
+
+| Failure | Detection | Fix |
+|---------|-----------|-----|
+| Icon-only button without label | axe-core, screen reader reads "button" with no name | Add `aria-label="Close dialog"` |
+| Form input without label association | axe-core, clicking label doesn't focus input | Use `<label for="id">` or `aria-labelledby` |
+| Dynamic content not announced | Screen reader doesn't react to content change | Add `role="status"` or `aria-live="polite"` to the container |
+| Color-only status indicator | Manual review, color filter simulation | Add text label or icon alongside the color |
+| Focus lost after modal close | Keyboard test: ESC closes modal, focus goes to document root | Track and restore previous focus element |
+| Low color contrast | axe-core, Lighthouse | Ensure ≥4.5:1 for normal text, ≥3:1 for large text |
+| Heading hierarchy skip | axe-core, screen reader rotor shows H1→H3 jump | Use sequential headings: H1 → H2 → H3, never skip levels |
+
+
 ### Meaningful Empty and Error States
 
-```tsx
-// Don't show blank screens
-function TaskList({ tasks }: { tasks: Task[] }) {
-  if (tasks.length === 0) {
-    return (
-      <div role="status" className="text-center py-12">
-        <TasksEmptyIcon className="mx-auto h-12 w-12 text-muted" />
-        <h3 className="mt-2 text-sm font-medium">No tasks</h3>
-        <p className="mt-1 text-sm text-muted">Get started by creating a new task.</p>
-        <Button className="mt-4" onClick={onCreateTask}>Create Task</Button>
-      </div>
-    );
-  }
-
-  return <ul role="list">...</ul>;
-}
+```html
+<!-- Don't show blank screens -->
+<div role="status" class="empty-state">
+  <span class="icon-empty" aria-hidden="true"></span>
+  <h3>No tasks</h3>
+  <p>Get started by creating a new task.</p>
+  <button onclick="createTask()">Create Task</button>
+</div>
 ```
 
 ## Responsive Design
 
 Design for mobile first, then expand:
 
-```tsx
-// Tailwind: mobile-first responsive
-<div className="
-  grid grid-cols-1      /* Mobile: single column */
-  sm:grid-cols-2        /* Small: 2 columns */
-  lg:grid-cols-3        /* Large: 3 columns */
-  gap-4
-">
+```css
+/* Mobile-first responsive grid */
+.task-grid {
+  display: grid;
+  grid-template-columns: 1fr;      /* Mobile: single column */
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .task-grid { grid-template-columns: repeat(2, 1fr); }  /* Tablet: 2 columns */
+}
+
+@media (min-width: 1024px) {
+  .task-grid { grid-template-columns: repeat(3, 1fr); }  /* Desktop: 3 columns */
+}
 ```
 
 Test at these breakpoints: 320px, 768px, 1024px, 1440px.
 
 ## Loading and Transitions
 
-```tsx
-// Skeleton loading (not spinners for content)
-function TaskListSkeleton() {
-  return (
-    <div className="space-y-3" aria-busy="true" aria-label="Loading tasks">
-      {Array.from({ length: 3 }).map((_, i) => (
-        <div key={i} className="h-12 bg-muted animate-pulse rounded" />
-      ))}
-    </div>
-  );
+```html
+<!-- Skeleton loading (not spinners for content) -->
+<div class="skeleton-list" aria-busy="true" aria-label="Loading tasks">
+  <div class="skeleton-row" style="height: 3rem"></div>
+  <div class="skeleton-row" style="height: 3rem"></div>
+  <div class="skeleton-row" style="height: 3rem"></div>
+</div>
+```
+
+```css
+.skeleton-row {
+  background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
 }
 
-// Optimistic updates for perceived speed
-function useToggleTask() {
-  const queryClient = useQueryClient();
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+```
 
-  return useMutation({
-    mutationFn: toggleTask,
-    onMutate: async (taskId) => {
-      await queryClient.cancelQueries({ queryKey: ['tasks'] });
-      const previous = queryClient.getQueryData(['tasks']);
+For optimistic UI (showing the result before the server confirms), update the DOM immediately and roll back on error:
 
-      queryClient.setQueryData(['tasks'], (old: Task[]) =>
-        old.map(t => t.id === taskId ? { ...t, done: !t.done } : t)
-      );
+```js
+function toggleTask(taskId) {
+  const checkbox = document.querySelector(`#task-${taskId}`);
+  const wasChecked = checkbox.checked;
+  checkbox.checked = !wasChecked;  // Optimistic update
 
-      return { previous };
-    },
-    onError: (_err, _taskId, context) => {
-      queryClient.setQueryData(['tasks'], context?.previous);
-    },
-  });
+  fetch(`/tasks/${taskId}/toggle`, { method: 'POST' })
+    .then(res => { if (!res.ok) throw new Error(res.statusText); })
+    .catch(() => { checkbox.checked = wasChecked; });  // Rollback
 }
 ```
 

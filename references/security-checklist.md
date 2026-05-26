@@ -132,3 +132,49 @@ res.status(500).json({
 | 8 | Data Integrity Failures | Verify updates/dependencies, signed artifacts |
 | 9 | Logging Failures | Log security events, don't log secrets |
 | 10 | SSRF | Validate/allowlist URLs, restrict outbound requests |
+
+## Python-Specific Security
+
+> See also `references/python-patterns.md` for detailed Python security patterns and code examples.
+
+### Dependency Auditing
+
+```bash
+# pip-audit (preferred — uses PyPA advisory DB)
+pip-audit
+# Strict mode — exit 1 on any vulnerability
+pip-audit --strict
+
+# safety (commercial alternative)
+safety check
+
+# npm equivalents:
+# npm audit → pip-audit or safety check
+# npm audit fix → pip install --upgrade <package> (no auto-fix)
+# npx npm-check-updates → pip list --outdated or pur
+```
+
+### Language-Specific Hazards
+
+- [ ] **Never deserialize untrusted data with `pickle`** — enables arbitrary code execution. Use `json.loads()` with schema validation instead.
+- [ ] **Never use `yaml.load()` on untrusted input** — use `yaml.safe_load()` which only parses basic types.
+- [ ] **Never pass untrusted input to `eval()`, `exec()`, `compile()`, or `__import__()`** — there is no safe equivalent.
+- [ ] **Never use `shell=True` in `subprocess` calls with user input** — use list form `subprocess.run(["cmd", arg])` which avoids shell injection.
+- [ ] **Validate command names against an allowlist** before passing to `subprocess`.
+- [ ] **Run `bandit`** for static security analysis: `bandit -r src/`
+- [ ] **Run `detect-secrets`** to prevent credential leaks: `detect-secrets scan --all-files`
+
+### Pre-Commit Checks (Python)
+
+```bash
+# Check for accidentally staged secrets
+git diff --cached | grep -i "password\|secret\|api_key\|token"
+# Also check pickle, eval, exec usage
+git diff --cached | grep -E "pickle|eval\(|exec\(|shell=True"
+```
+
+### Framework-Specific
+
+- **Django:** Ensure `DEBUG=False` in production, CSRF middleware enabled, `SECRET_KEY` not hardcoded, `ALLOWED_HOSTS` configured.
+- **FastAPI/Starlette:** Validate request bodies with Pydantic models, set `response_model` to exclude sensitive fields, use CORS middleware with specific origins.
+- **Flask:** Set `SESSION_COOKIE_HTTPONLY=True`, `SESSION_COOKIE_SECURE=True`, use `flask-talisman` for security headers.

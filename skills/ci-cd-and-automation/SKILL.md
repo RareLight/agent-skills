@@ -36,13 +36,13 @@ Pull Request Opened
 │   ↓ pass         │
 │   UNIT TESTS     │  jest/vitest
 │   ↓ pass         │
-│   BUILD          │  npm run build
+│   BUILD          │  build the project
 │   ↓ pass         │
 │   INTEGRATION    │  API/DB tests
 │   ↓ pass         │
 │   E2E (optional) │  Playwright/Cypress
 │   ↓ pass         │
-│   SECURITY AUDIT │  npm audit
+│   SECURITY AUDIT │  run dependency audit
 │   ↓ pass         │
 │   BUNDLE SIZE    │  bundlesize check
 └─────────────────┘
@@ -73,28 +73,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-runtime@v4
         with:
-          node-version: '22'
-          cache: 'npm'
+          runtime-version: 'latest'
+          cache: 'dependencies'
 
       - name: Install dependencies
-        run: npm ci
+        run: install dependencies (clean install)
 
       - name: Lint
-        run: npm run lint
+        run: run the linter
 
       - name: Type check
-        run: npx tsc --noEmit
+        run: run type checking
 
       - name: Test
-        run: npm test -- --coverage
+        run: run the test suite with coverage
 
       - name: Build
-        run: npm run build
+        run: build the project
 
       - name: Security audit
-        run: npm audit --audit-level=high
+        run: run dependency audit (fail on high severity)
 ```
 
 ### With Database Integration Tests
@@ -119,17 +119,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-runtime@v4
         with:
-          node-version: '22'
-          cache: 'npm'
-      - run: npm ci
+          runtime-version: 'latest'
+          cache: 'dependencies'
+      - run: install dependencies (clean install)
       - name: Run migrations
-        run: npx prisma migrate deploy
+        run: apply database migrations
         env:
           DATABASE_URL: postgresql://ci_user:${{ secrets.CI_DB_PASSWORD }}@localhost:5432/testdb
       - name: Integration tests
-        run: npm run test:integration
+        run: run integration tests
         env:
           DATABASE_URL: postgresql://ci_user:${{ secrets.CI_DB_PASSWORD }}@localhost:5432/testdb
 ```
@@ -143,17 +143,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-runtime@v4
         with:
-          node-version: '22'
-          cache: 'npm'
-      - run: npm ci
+          runtime-version: 'latest'
+          cache: 'dependencies'
+      - run: install dependencies (clean install)
       - name: Install Playwright
-        run: npx playwright install --with-deps chromium
+        run: install browser testing dependencies
       - name: Build
-        run: npm run build
+        run: build the project
       - name: Run E2E tests
-        run: npx playwright test
+        run: run E2E tests
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
@@ -184,7 +184,7 @@ Agent fixes → pushes → CI runs again
 **Key patterns:**
 
 ```
-Lint failure → Agent runs `npm run lint --fix` and commits
+Lint failure → Agent runs `run the linter with auto-fix` and commits
 Type error  → Agent reads the error location and fixes the type
 Test failure → Agent follows debugging-and-error-recovery skill
 Build error → Agent checks config and dependencies
@@ -204,7 +204,7 @@ deploy-preview:
   steps:
     - uses: actions/checkout@v4
     - name: Deploy preview
-      run: npx vercel --token=${{ secrets.VERCEL_TOKEN }}
+      run: deploy to hosting platform
 ```
 
 ### Feature Flags
@@ -265,7 +265,7 @@ jobs:
       - name: Rollback deployment
         run: |
           # Deploy the specified previous version
-          npx vercel rollback ${{ inputs.version }}
+          rollback deployment
 ```
 
 ## Environment Management
@@ -288,7 +288,7 @@ CI should never have production secrets. Use separate secrets for CI testing.
 # .github/dependabot.yml
 version: 2
 updates:
-  - package-ecosystem: npm
+  - package-ecosystem: pip
     directory: /
     schedule:
       interval: weekly
@@ -313,7 +313,7 @@ When the pipeline exceeds 10 minutes, apply these strategies in order of impact:
 ```
 Slow CI pipeline?
 ├── Cache dependencies
-│   └── Use actions/cache or setup-node cache option for node_modules
+│   └── Use actions/cache or setup-runtime cache option for dependencies
 ├── Run jobs in parallel
 │   └── Split lint, typecheck, test, build into separate parallel jobs
 ├── Only run what changed
@@ -333,28 +333,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: '22', cache: 'npm' }
-      - run: npm ci
-      - run: npm run lint
+      - uses: actions/setup-runtime@v4
+        with: { runtime-version: 'latest', cache: 'dependencies' }
+      - run: install dependencies (clean install)
+      - run: run the linter
 
   typecheck:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: '22', cache: 'npm' }
-      - run: npm ci
-      - run: npx tsc --noEmit
+      - uses: actions/setup-runtime@v4
+        with: { runtime-version: 'latest', cache: 'dependencies' }
+      - run: install dependencies (clean install)
+      - run: run type checking
 
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: '22', cache: 'npm' }
-      - run: npm ci
-      - run: npm test -- --coverage
+      - uses: actions/setup-runtime@v4
+        with: { runtime-version: 'latest', cache: 'dependencies' }
+      - run: install dependencies (clean install)
+      - run: run the test suite with coverage
 ```
 
 ## Common Rationalizations

@@ -48,18 +48,18 @@ Create a rules file that persists across sessions. This is the highest-leverage 
 - Node.js 22, Express, PostgreSQL, Prisma
 
 ## Commands
-- Build: `npm run build`
-- Test: `npm test`
-- Lint: `npm run lint --fix`
-- Dev: `npm run dev`
-- Type check: `npx tsc --noEmit`
+- Build: `build the project`
+- Test: `run the project's test suite`
+- Lint: `run the linter with auto-fix`
+- Dev: `run the development server`
+- Type check: `run type checking`
 
 ## Code Conventions
-- Functional components with hooks (no class components)
-- Named exports (no default exports)
-- colocate tests next to source: `Button.tsx` → `Button.test.tsx`
-- Use `cn()` utility for conditional classNames
-- Error boundaries at route level
+- Separate markup, styles, and logic: `widget.html`, `widget.css`, `widget.js`
+- Colocate tests next to source: `widget.js` → `widget.test.js`
+- Use semantic HTML over ARIA-reliant workarounds
+- Wrap third-party code behind your own interface
+- Always escape user-generated content before rendering
 
 ## Boundaries
 - Never commit .env files or secrets

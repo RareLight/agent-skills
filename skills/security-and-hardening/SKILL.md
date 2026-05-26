@@ -340,10 +340,23 @@ For detailed security checklists and pre-commit verification steps, see `referen
 
 After implementing security-relevant code:
 
-- [ ] `npm audit` shows no critical or high vulnerabilities
+- [ ] **Dependency audit clean:** `npm audit` (JS/TS) or `pip-audit`/`safety check` (Python) shows no critical or high vulnerabilities
 - [ ] No secrets in source code or git history
 - [ ] All user input validated at system boundaries
 - [ ] Authentication and authorization checked on every protected endpoint
 - [ ] Security headers present in response (check with browser DevTools)
 - [ ] Error responses don't expose internal details
 - [ ] Rate limiting active on auth endpoints
+
+### Language-Specific Verification
+
+**Python projects additionally:**
+- [ ] `bandit -r src/` passes (static security analysis)
+- [ ] No `pickle.loads()` or `yaml.load()` on untrusted input
+- [ ] No `eval()`/`exec()` with user input
+- [ ] Subprocess calls use list form (`shell=False`)
+- [ ] See `references/python-patterns.md` and `references/security-checklist.md` for full Python security checklist
+
+**JavaScript/TypeScript projects additionally:**
+- [ ] `npm audit` (or equivalent) shows no critical or high vulnerabilities
+- [ ] See `references/security-checklist.md` for full security checklist
