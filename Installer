@@ -1,0 +1,231 @@
+#!/usr/bin/env python3
+"""
+Installer - Robust Agent Skills Sync Script
+
+A destructive, one-way sync tool to sync global agent skills from a source directory
+to multiple target directories, ensuring clean states and validating structure.
+Reads defaults from 'config.yaml' if present.
+Runs natively on macOS (Apple Silicon or Intel) using only standard library modules.
+"""
+
+import os
+import sys
+import shutil
+import argparse
+
+# ANSI color codes for rich, professional CLI output
+COLOR_RESET = "\033[0m"
+COLOR_BOLD = "\033[1m"
+COLOR_RED = "\033[31m"
+COLOR_GREEN = "\033[32m"
+COLOR_YELLOW = "\033[33m"
+COLOR_BLUE = "\033[34m"
+COLOR_CYAN = "\033[36m"
+
+def log_info(msg: str):
+    print(f"{COLOR_BLUE}[INFO]{COLOR_RESET} {msg}")
+
+def log_success(msg: str):
+    print(f"{COLOR_GREEN}[SUCCESS]{COLOR_RESET} {COLOR_BOLD}{msg}{COLOR_RESET}")
+
+def log_warn(msg: str):
+    print(f"{COLOR_YELLOW}[WARNING]{COLOR_RESET} {msg}")
+
+def log_error(msg: str):
+    print(f"{COLOR_RED}[ERROR]{COLOR_RESET} {COLOR_BOLD}{msg}{COLOR_RESET}", file=sys.stderr)
+
+def load_config_yaml(file_path: str) -> dict:
+    """Loads source and targets from YAML file. Has zero-dependency fallback parser."""
+    try:
+        import yaml
+        with open(file_path, 'r') as f:
+            data = yaml.safe_load(f)
+            if isinstance(data, dict):
+                return data
+    except Exception:
+        # Graceful fallback to parse simple yaml key-value structure without PyYAML
+        pass
+
+    config = {}
+    if not os.path.exists(file_path):
+        return config
+
+    try:
+        with open(file_path, 'r') as f:
+            lines = f.readlines()
+        
+        in_targets = False
+        for line in lines:
+            stripped = line.strip()
+            if not stripped or stripped.startswith('#'):
+                continue
+            if stripped.startswith('source:'):
+                val = stripped.split(':', 1)[1].strip()
+                if val.startswith('"') and val.endswith('"'):
+                    val = val[1:-1]
+                elif val.startswith("'") and val.endswith("'"):
+                    val = val[1:-1]
+                config["source"] = val
+            elif stripped.startswith('targets:'):
+                in_targets = True
+                config["targets"] = []
+            elif in_targets and (stripped.startswith('-') or stripped.startswith('*')):
+                val = stripped[1:].strip()
+                if val.startswith('"') and val.endswith('"'):
+                    val = val[1:-1]
+                elif val.startswith("'") and val.endswith("'"):
+                    val = val[1:-1]
+                config["targets"].append(val)
+            elif in_targets and ':' in stripped:
+                in_targets = False
+    except Exception as e:
+        log_warn(f"Simple fallback YAML parser failed to read '{file_path}': {e}")
+    
+    return config
+
+def main():
+    # 1. Determine config path and load defaults
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    config_path = os.path.join(script_dir, "config.yaml")
+    if not os.path.exists(config_path):
+        config_path = "config.yaml"
+
+    config_data = {}
+    if os.path.exists(config_path):
+        config_data = load_config_yaml(config_path)
+        if config_data and "source" in config_data:
+            log_info(f"Loaded configuration from '{COLOR_CYAN}{config_path}{COLOR_RESET}'")
+
+    # Command-line defaults fallback to config file, then to hardcoded defaults
+    fallback_source = config_data.get("source", "~/skills")
+    fallback_targets = config_data.get("targets", ["~/.gemini/antigravity/skills/", "~/.config/opencode/skills/"])
+
+    parser = argparse.ArgumentParser(
+        description="Destructive, one-way sync of global agent skills with structural verification."
+    )
+    parser.add_argument(
+        "--source",
+        default=None,
+        help=f"Source directory containing agent skills (default from config: {fallback_source})"
+    )
+    parser.add_argument(
+        "--targets",
+        nargs="+",
+        default=None,
+        help=f"Target directories to sync skills into (default from config: {fallback_targets})"
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Perform a trial run with no changes made to the targets"
+    )
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Enable detailed diagnostic logging"
+    )
+
+    args = parser.parse_args()
+
+    # Resolve args or fall back to config
+    source_val = args.source if args.source is not None else fallback_source
+    targets_val = args.targets if args.targets is not None else fallback_targets
+
+    # 2. Resolve and validate source directory
+    source_path = os.path.abspath(os.path.expanduser(source_val))
+    if not os.path.isdir(source_path):
+        log_error(f"Source directory '{source_val}' resolved to '{source_path}', but does not exist.")
+        sys.exit(1)
+
+    log_info(f"Source directory: {COLOR_CYAN}{source_path}{COLOR_RESET}")
+
+    # 3. Scan source directory for skills (subdirectories)
+    skills = []
+    try:
+        for item in sorted(os.listdir(source_path)):
+            item_path = os.path.join(source_path, item)
+            # Skip hidden files/directories (like .git, .DS_Store)
+            if item.startswith('.'):
+                continue
+            if os.path.isdir(item_path):
+                skills.append(item)
+    except Exception as e:
+        log_error(f"Failed to list source directory: {e}")
+        sys.exit(1)
+
+    if not skills:
+        log_warn(f"No skill subdirectories found in source directory '{source_path}'.")
+        sys.exit(0)
+
+    log_info(f"Found {len(skills)} skill folders in source.")
+
+    # 4. Perform asset structural check
+    invalid_skills = []
+    for skill in skills:
+        skill_dir = os.path.join(source_path, skill)
+        skill_md_path = os.path.join(skill_dir, "SKILL.md")
+        if not os.path.isfile(skill_md_path):
+            log_warn(f"Skill folder '{skill}' is missing required '{COLOR_BOLD}SKILL.md{COLOR_RESET}' file!")
+            invalid_skills.append(skill)
+        elif args.verbose:
+            log_info(f"Validated structure for skill: '{skill}' (SKILL.md found)")
+
+    # 5. Resolve and process targets
+    resolved_targets = [os.path.abspath(os.path.expanduser(t)) for t in targets_val]
+
+    if args.dry_run:
+        print(f"\n{COLOR_YELLOW}--- DRY RUN MODE (No changes will be written) ---{COLOR_RESET}")
+
+    for target in resolved_targets:
+        print(f"\nProcessing target: {COLOR_CYAN}{target}{COLOR_RESET}")
+        
+        # Ensure target base directory exists
+        if not args.dry_run:
+            try:
+                os.makedirs(target, exist_ok=True)
+            except Exception as e:
+                log_error(f"Failed to create target directory '{target}': {e}")
+                continue
+
+        for skill in skills:
+            src_skill_dir = os.path.join(source_path, skill)
+            dest_skill_dir = os.path.join(target, skill)
+
+            # Purge the target directory if it exists to ensure a clean slate
+            if os.path.exists(dest_skill_dir):
+                if args.dry_run:
+                    print(f"  [Would Purge] {dest_skill_dir}")
+                else:
+                    if args.verbose:
+                        log_info(f"Purging existing target folder: {dest_skill_dir}")
+                    try:
+                        if os.path.isdir(dest_skill_dir) and not os.path.islink(dest_skill_dir):
+                            shutil.rmtree(dest_skill_dir)
+                        else:
+                            os.remove(dest_skill_dir)
+                    except Exception as e:
+                        log_error(f"Failed to purge '{dest_skill_dir}': {e}")
+                        continue
+            
+            # Copy source skill directory to target
+            if args.dry_run:
+                print(f"  [Would Copy]  {src_skill_dir} -> {dest_skill_dir}")
+            else:
+                if args.verbose:
+                    log_info(f"Copying {src_skill_dir} -> {dest_skill_dir}")
+                try:
+                    shutil.copytree(src_skill_dir, dest_skill_dir)
+                except Exception as e:
+                    log_error(f"Failed to copy '{src_skill_dir}' to '{dest_skill_dir}': {e}")
+                    continue
+
+    if args.dry_run:
+        print(f"\n{COLOR_YELLOW}--- Dry run completed. No modifications made. ---{COLOR_RESET}")
+    else:
+        print("")
+        log_success("All skills synchronized successfully!")
+        if invalid_skills:
+            log_warn(f"Note: The following skill folders lacked a 'SKILL.md' file: {', '.join(invalid_skills)}")
+
+if __name__ == "__main__":
+    main()

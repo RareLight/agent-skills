@@ -1,0 +1,8 @@
+# Installer configuration file
+# Specify the source directory and the target destinations for skill synchronization
+
+source: "./skills"
+
+targets:
+  - "~/.gemini/antigravity/skills/"
+  - "~/.config/opencode/skills/"
