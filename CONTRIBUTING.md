@@ -25,34 +25,32 @@ Every new skill must have:
 - `SKILL.md` in the skill directory
 - YAML frontmatter with valid `name` and `description`
 
-New skills should generally follow the standard anatomy:
+Skills follow the streamlined high-density pattern defined in `docs/skill-anatomy.md`:
 
-- **Overview** — What this skill does and why it matters
-- **When to Use** — Triggering conditions
-- **Process** — Step-by-step workflow
-- **Common Rationalizations** — Excuses agents use to skip steps, with rebuttals
-- **Red Flags** — Warning signs that the skill is being applied incorrectly
-- **Verification** — How to confirm the skill was applied correctly
+- **Core Workflow / Process** — Step-by-step workflow instructions
+- **Implementation / Architectural Rules** — Constraints, boundaries, and best practices
+- **Verification Checklist** — Evidence-backed exit criteria
 
-The frontmatter fields above are required. The section anatomy is a recommended pattern: equivalent headings such as `How It Works`, `Workflow`, or `Core Process` are fine when they preserve the same intent and keep the skill easy to follow.
+This is a recommended pattern, not a rigid template: equivalent headings that serve the same purpose are acceptable. The frontmatter fields above are required.
 
 ### What Not to Do
 
-- Don't duplicate content between skills — reference other skills instead
+- Don't duplicate content between skills — reference other skills by name instead
 - Don't add skills that are vague advice instead of actionable processes
+- Don't use tutorial prose, ASCII diagrams, or verbose narrative — prefer dense imperative instructions
 - Don't create supporting files unless content exceeds 100 lines
-- Don't create an empty `scripts/` directory just to match another skill — add `scripts/` only when the skill includes runnable helpers
+- Don't create an empty `scripts/` directory to match another skill — add `scripts/` only when the skill includes runnable helpers
 - Don't put reference material inside skill directories — use `references/` instead
 
 ## Modifying Existing Skills
 
 - Keep changes focused and minimal
 - Preserve the existing structure and tone
-- Test that YAML frontmatter remains valid after edits
+- Verify YAML frontmatter remains valid after edits
 
 ## Testing Hooks
 
-The session-start hook (`hooks/session-start.sh`) injects the `using-agent-skills` meta-skill into every new Claude Code session. A regression test at `hooks/session-start-test.sh` validates the hook's JSON payload — both when `jq` is available and when it isn't.
+The session-start hook (`hooks/session-start.sh`) injects the `using-agent-skills` meta-skill into every new opencode session. A regression test at `hooks/session-start-test.sh` validates the hook's JSON payload — both when `jq` is available and when it isn't.
 
 Run it before opening any PR that touches:
 

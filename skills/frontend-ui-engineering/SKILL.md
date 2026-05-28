@@ -24,6 +24,7 @@ description: Builds production-quality UIs. Use when building or modifying user-
   1. *Automated*: Run Lighthouse Accessibility (target ≥90) and `axe` checks.
   2. *Keyboard Audit*: Test the page entirely with the keyboard.
   3. *Screen Reader*: Verify navigation layout and dynamic changes with a screen reader.
+- **Supplemental Reference**: `references/accessibility-checklist.md` — detailed keyboard, screen reader, and ARIA verification.
 
 ## Verification Checklist
 - [ ] Component renders clean with zero browser console errors or accessibility violations.

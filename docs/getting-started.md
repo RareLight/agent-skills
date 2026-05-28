@@ -13,17 +13,15 @@ Each skill is a Markdown file (`SKILL.md`) that describes a specific engineering
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/addyosmani/agent-skills.git
+git clone https://github.com/RareLight/agent-skills.git
 ```
 
 ### 2. Choose a skill
 
-Browse the `skills/` directory. Each subdirectory contains a `SKILL.md` with:
-- **When to use** — triggers that indicate this skill applies
-- **Process** — step-by-step workflow
-- **Verification** — how to confirm the work is done
-- **Common rationalizations** — excuses the agent might use to skip steps
-- **Red flags** — signs the skill is being violated
+Browse the `skills/` directory. Each subdirectory contains a `SKILL.md` with a streamlined high-density pattern:
+- **Core Workflow / Process** — step-by-step instructions
+- **Implementation / Architectural Rules** — constraints and best practices
+- **Verification Checklist** — evidence-backed exit criteria
 
 ### 3. Load the skill into your agent
 
@@ -31,7 +29,7 @@ Copy the relevant `SKILL.md` content into your agent's system prompt, rules file
 
 **System prompt:** Paste the skill content at the start of the session.
 
-**Rules file:** Add skill content to your project's rules file (CLAUDE.md, .cursorrules, etc.).
+**Rules file:** Add skill content to your project's rules file (AGENTS.md, .cursorrules, etc.).
 
 **Conversation:** Reference the skill when giving instructions: "Follow the test-driven-development process for this change."
 
@@ -72,17 +70,13 @@ Don't load all skills at once — it wastes context. Load skills relevant to the
 
 ## Skill Anatomy
 
-Every skill follows the same structure:
+Every skill follows a streamlined high-density structure:
 
 ```
 YAML frontmatter (name, description)
-├── Overview — What this skill does
-├── When to Use — Triggers and conditions
-├── Core Process — Step-by-step workflow
-├── Examples — Code samples and patterns
-├── Common Rationalizations — Excuses and rebuttals
-├── Red Flags — Signs the skill is being violated
-└── Verification — Exit criteria checklist
+├── Core Workflow / Process — Step-by-step instructions
+├── Implementation / Architectural Rules — Constraints and best practices
+└── Verification Checklist — Evidence-backed exit criteria
 ```
 
 See [skill-anatomy.md](skill-anatomy.md) for the full specification.
@@ -99,18 +93,20 @@ The `agents/` directory contains pre-configured agent personas:
 
 Load an agent definition when you need specialized review. For example, ask your coding agent to "review this change using the code-reviewer agent persona" and provide the agent definition.
 
-## Using Commands
+## Intent Mapping
 
-The `.claude/commands/` directory contains slash commands for Claude Code:
+Skills activate automatically based on the type of work:
 
-| Command | Skill Invoked |
-|---------|---------------|
-| `/spec` | spec-driven-development |
-| `/plan` | planning-and-task-breakdown |
-| `/build` | incremental-implementation + test-driven-development |
-| `/test` | test-driven-development |
-| `/review` | code-review-and-quality |
-| `/ship` | shipping-and-launch |
+| Intent | Skill(s) Invoked |
+|--------|------------------|
+| Design a feature | spec-driven-development |
+| Plan implementation | planning-and-task-breakdown |
+| Build a feature | incremental-implementation + test-driven-development |
+| Fix a bug | debugging-and-error-recovery |
+| Review code | code-review-and-quality |
+| Ship to production | shipping-and-launch |
+
+The `using-agent-skills` meta-skill handles discovery — just describe what you need in natural language.
 
 ## Using References
 

@@ -33,51 +33,24 @@ description: Guides agents through [task/workflow]. Use when [specific trigger c
 
 **Why this matters:** Agents discover skills by reading descriptions. The description is injected into the system prompt, so it must tell the agent both what the skill provides and when to activate it. Do not summarize the workflow — if the description contains process steps, the agent may follow the summary instead of reading the full skill.
 
-### Standard Sections (Recommended Pattern)
+### Streamlined High-Density Pattern (Recommended)
 
-The frontmatter contract above is required. The section layout below is a recommended pattern, not a rigid template: equivalent headings are acceptable when they serve the same purpose clearly.
+To optimize context window usage and prevent token bloat, all skill files should be written in a high-density, action-oriented format. Avoid tutorial prose, large code examples, ASCII diagrams, and redundant tables.
 
 ```markdown
 # Skill Title
 
-## Overview
-One-two sentences explaining what this skill does and why it matters.
+## Core Workflow / Process
+Numbered step-by-step instructions or phases of the workflow. Keep descriptions brief, imperative, and focused strictly on the procedural actions required.
 
-## When to Use
-- Bullet list of triggering conditions (symptoms, task types)
-- When NOT to use (exclusions)
+## Implementation / Architectural Rules
+A dense bulleted list of constraints, boundaries, and best practices. Combine what to avoid and mental checks into direct, clear, imperative rules (e.g., "Do not X; always Y").
 
-## [Core Process / The Workflow / Steps]
-The main workflow, broken into numbered steps or phases.
-Include code examples where they help.
-Use flowcharts (ASCII) where decision points exist.
-
-## [Specific Techniques / Patterns]
-Detailed guidance for specific scenarios.
-Code examples, templates, configuration.
-
-## Common Rationalizations
-| Rationalization | Reality |
-|---|---|
-| Excuse agents use to skip steps | Why the excuse is wrong |
-
-## Red Flags
-- Behavioral patterns indicating the skill is being violated
-- Things to watch for during review
-
-## Verification
-After completing the skill's process, confirm:
-- [ ] Checklist of exit criteria
-- [ ] Evidence requirements
+## Verification Checklist
+A concise, checkable exit-criteria list of testable conditions (e.g., tests pass, linter is clean). Every checkbox should be verifiable with evidence (test output, build result, screenshot, etc.).
 ```
 
 ## Section Purposes
-
-### Overview
-The "elevator pitch" for the skill. Should answer: What does this skill do, and why should an agent follow it?
-
-### When to Use
-Helps agents and humans decide if this skill applies to the current task. Include both positive triggers ("Use when X") and negative exclusions ("NOT for Y").
 
 ### Core Process
 The heart of the skill. This is the step-by-step workflow the agent follows. Must be specific and actionable — not vague advice.
@@ -85,16 +58,11 @@ The heart of the skill. This is the step-by-step workflow the agent follows. Mus
 **Good:** "Run `npm test` and verify all tests pass"
 **Bad:** "Make sure the tests work"
 
-### Common Rationalizations
-The most distinctive feature of well-crafted skills. These are excuses agents use to skip important steps, paired with rebuttals. They prevent the agent from rationalizing its way out of following the process.
-
-Think of every time an agent has said "I'll add tests later" or "This is simple enough to skip the spec" — those go here with a factual counter-argument.
-
-### Red Flags
-Observable signs that the skill is being violated. Useful during code review and self-monitoring.
+### Implementation Rules
+The constraints and boundaries governing execution. These consolidate rules of thumb, design system policies, and behavioral guardrails into direct imperative statements. They prevent the agent from rationalizing its way out of following the process.
 
 ### Verification
-The exit criteria. A checklist the agent uses to confirm the skill's process is complete. Every checkbox should be verifiable with evidence (test output, build result, screenshot, etc.).
+The exit criteria. A checklist the agent uses to confirm the skill's process is complete.
 
 ## Supporting Files
 
@@ -112,9 +80,9 @@ If a skill does not need runnable helpers, do not create an empty `scripts/` dir
 1. **Process over knowledge.** Skills are workflows, not reference docs. Steps, not facts.
 2. **Specific over general.** "Run `npm test`" beats "verify the tests".
 3. **Evidence over assumption.** Every verification checkbox requires proof.
-4. **Anti-rationalization.** Every skip-worthy step needs a counter-argument in the rationalizations table.
+4. **Token-conscious.** Every section must justify its inclusion. If removing it wouldn't change agent behavior, remove it.
 5. **Progressive disclosure.** Main SKILL.md is the entry point. Supporting files are loaded only when needed.
-6. **Token-conscious.** Every section must justify its inclusion. If removing it wouldn't change agent behavior, remove it.
+6. **High Density.** Prefer bulleted imperative instructions over narrative explanations, ASCII diagrams, or tutorial blocks.
 
 ## Naming Conventions
 
@@ -144,6 +112,5 @@ Required:
 
 Recommended:
 
-- The standard section flow shown above
-- Equivalent headings such as `How It Works`, `Core Process`, or `Workflow` when they read more naturally for the skill
+- The streamlined, high-density section flow shown above
 - Supporting files only when they keep the main `SKILL.md` focused

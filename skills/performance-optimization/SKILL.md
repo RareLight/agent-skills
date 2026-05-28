@@ -23,6 +23,7 @@ description: Optimizes application performance. Use when performance requirement
 - **Bundle Optimization**: Use lazy loading (`React.lazy`, dynamic `import()`) for heavy components and routes. Verify bundle budgets in CI.
 - **DOM & Threading**: Batch DOM writes inside `requestAnimationFrame`. Debounce expensive scroll/resize event handlers. Avoid blocking the async backend event loop with sync operations.
 - **Caching Strategy**: Cache slow, static, or rarely modified calculations. Employ robust `Cache-Control` headers.
+- **Supplemental Reference**: `references/performance-checklist.md` — detailed checklist with Core Web Vitals targets and measurement commands.
 
 ## Verification Checklist
 - [ ] Profiling baseline is recorded and contrasted with post-fix timing (with specific numbers).

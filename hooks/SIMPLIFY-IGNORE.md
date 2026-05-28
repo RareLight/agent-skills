@@ -1,6 +1,6 @@
 # simplify-ignore hook
 
-Block-level protection for `/code-simplify`. Mark code that should never be simplified — the model won't see it.
+Block-level protection for code simplification workflows. Mark code that should never be simplified — the model won't see it.
 
 ## Setup
 
@@ -16,7 +16,7 @@ result[3] = buf[3] ^ key[3];
 /* simplify-ignore-end */
 ```
 
-2. Add hooks to `.claude/settings.json`:
+2. Register the hooks in your agent harness's settings file (e.g. `.harness/settings.json`, `.claude/settings.json`):
 
 ```json
 {
@@ -24,27 +24,27 @@ result[3] = buf[3] ^ key[3];
     "PreToolUse": [
       {
         "matcher": "Read",
-        "hooks": [{ "type": "command", "command": "bash ${CLAUDE_PROJECT_DIR}/hooks/simplify-ignore.sh" }]
+        "hooks": [{ "type": "command", "command": "bash ${PROJECT_DIR}/hooks/simplify-ignore.sh" }]
       }
     ],
     "PostToolUse": [
       {
         "matcher": "Edit|Write",
-        "hooks": [{ "type": "command", "command": "bash ${CLAUDE_PROJECT_DIR}/hooks/simplify-ignore.sh" }]
+        "hooks": [{ "type": "command", "command": "bash ${PROJECT_DIR}/hooks/simplify-ignore.sh" }]
       }
     ],
     "Stop": [
       {
-        "hooks": [{ "type": "command", "command": "bash ${CLAUDE_PROJECT_DIR}/hooks/simplify-ignore.sh" }]
+        "hooks": [{ "type": "command", "command": "bash ${PROJECT_DIR}/hooks/simplify-ignore.sh" }]
       }
     ]
   }
 }
 ```
 
-3. Run `/code-simplify` — protected blocks become `/* BLOCK_de115a1d: perf-critical */` placeholders. The model reasons about surrounding code without seeing the protected implementation.
+3. Invoke the simplification workflow — protected blocks become `/* BLOCK_de115a1d: perf-critical */` placeholders. The model reasons about surrounding code without seeing the protected implementation.
 
-> **Note:** The hook stores temporary backups in `.claude/.simplify-ignore-cache/`. Make sure this path is in your `.gitignore`.
+> **Note:** The hook stores temporary backups in a cache directory. Make sure the path is in your `.gitignore`.
 
 ## How it works
 
@@ -70,20 +70,20 @@ Any comment style works (`//`, `/*`, `#`, `<!--`). Multiple blocks per file and 
 
 ## Crash recovery
 
-If Claude Code crashes without triggering the Stop hook, files on disk may still have `BLOCK_<hash>` placeholders. To restore manually:
+If the agent crashes without triggering the Stop hook, files on disk may still have `BLOCK_<hash>` placeholders. To restore manually:
 
 ```bash
 echo '{}' | bash hooks/simplify-ignore.sh
 ```
 
-Backups are stored in `.claude/.simplify-ignore-cache/` within your project directory.
+Backups are stored in the cache directory within your project.
 
 ## Known limitations
 
-- **Single-line blocks hide the entire line.** If `simplify-ignore-start` and `simplify-ignore-end` appear on the same line as other code, the whole line is hidden from the model, not just the annotated portion. Use dedicated lines for annotations.
+- **Single-line blocks hide the entire line.** If `simplify-ignore-start` and `simplify-ignore-end` appear on the same line as other code, the whole line is hidden from the model. Use dedicated lines for annotations.
 - **Comment suffix detection covers `*/` and `-->` only.** Template engines with non-standard comment closers (ERB `%>`, Blade `--}}`) may produce unbalanced placeholders. Use `#` or `//` style comments instead.
-- **Fallback expansion is progressive, not exact.** If the model alters a placeholder's formatting (e.g. changes the reason text), the hook tries progressively simpler matches: full placeholder → prefix+hash+suffix → hash-only. The hash-only fallback may leave cosmetic debris (e.g. stray `:` or reason text). A warning is printed to stderr when this happens.
-- **File renaming leaves placeholders.** If the model renames or moves a file via a shell command, the new file will retain `BLOCK_<hash>` placeholders. The original code is saved as `<old-filename>.recovered` when the session stops. You must manually restore the recovered code into the new file.
+- **Fallback expansion is progressive, not exact.** If the model alters a placeholder's formatting, the hook tries progressively simpler matches: full placeholder → prefix+hash+suffix → hash-only. The hash-only fallback may leave cosmetic debris. A warning is printed to stderr when this happens.
+- **File renaming leaves placeholders.** If the model renames or moves a file via a shell command, the new file will retain `BLOCK_<hash>` placeholders. The original code is saved when the session stops. You must manually restore the recovered code into the new file.
 
 ## Requirements
 

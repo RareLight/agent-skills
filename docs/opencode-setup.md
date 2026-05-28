@@ -1,26 +1,16 @@
 # OpenCode Setup
 
-This guide explains how to use Agent Skills with OpenCode in a way that closely mirrors the Claude Code experience (automatic skill selection, lifecycle-driven workflows, and strict process enforcement).
+This guide explains how to use Agent Skills with OpenCode's agent-driven workflow — automatic skill selection, lifecycle-driven workflows, and strict process enforcement.
 
 ## Overview
 
-OpenCode supports custom `/commands`, but does not have a native plugin system or automatic skill routing like Claude Code.
-
-Instead, we achieve parity through:
+OpenCode uses a skill-driven architecture:
 
 - A strong system prompt (`AGENTS.md`)
 - The built-in `skill` tool
-- Consistent skill discovery from the `/skills` directory
+- Consistent skill discovery from the `skills/` directory
 
-This creates an **agent-driven workflow** where skills are selected and executed automatically.
-
-While it is possible to recreate `/spec`, `/plan`, and other commands in OpenCode, this integration intentionally uses an agent-driven approach instead:
-
-- Skills are selected automatically based on intent
-- Workflows are enforced via `AGENTS.md`
-- No manual command invocation is required
-
-This more closely matches how Claude Code behaves in practice, where skills are triggered automatically rather than manually.
+This creates an **agent-driven workflow** where skills are selected and executed automatically based on intent, without requiring manual commands.
 
 ---
 
@@ -29,12 +19,12 @@ This more closely matches how Claude Code behaves in practice, where skills are 
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/addyosmani/agent-skills.git
+git clone https://github.com/RareLight/agent-skills.git
 ```
 
 2. Open the project in OpenCode.
 
-3. Ensure the following files are present in your workspace:
+3. Ensure the following are present in your workspace:
 
 - `AGENTS.md` (root)
 - `skills/` directory
@@ -72,7 +62,7 @@ Examples:
 
 The user does **not** need to explicitly request skills.
 
-### 3. Lifecycle Mapping (Implicit Commands)
+### 3. Lifecycle Mapping
 
 The development lifecycle is encoded implicitly:
 
@@ -83,13 +73,11 @@ The development lifecycle is encoded implicitly:
 - REVIEW → `code-review-and-quality`
 - SHIP → `shipping-and-launch`
 
-This replaces slash commands like `/spec`, `/plan`, etc.
-
 ---
 
 ## Usage Examples
 
-### Example 1: Feature Development
+### Feature Development
 
 User:
 ```
@@ -102,9 +90,7 @@ Agent behavior:
 - Produces a spec before writing code
 - Moves to planning and implementation skills
 
----
-
-### Example 2: Bug Fix
+### Bug Fix
 
 User:
 ```
@@ -115,9 +101,7 @@ Agent behavior:
 - Invokes `debugging-and-error-recovery`
 - Reproduces → localizes → fixes → adds guards
 
----
-
-### Example 3: Code Review
+### Code Review
 
 User:
 ```
@@ -140,16 +124,6 @@ For OpenCode to work correctly, the agent must follow these rules:
 - Do not jump directly to implementation
 
 These rules are enforced via `AGENTS.md`.
-
----
-
-## Limitations
-
-- No native slash commands (handled via intent mapping instead)
-- No plugin system (handled via prompt + structure)
-- Skill invocation depends on model compliance
-
-Despite these, the workflow closely matches Claude Code in practice.
 
 ---
 

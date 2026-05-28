@@ -16,6 +16,7 @@ description: Simplifies code for clarity. Use when refactoring code for clarity 
 - **Ternaries & Flags**: Replace dense ternary chains with readable switch statements or lookup mapping configurations.
 - **Redundancies**: Remove dead code, redundant type casting, unused packages, and wrapper abstractions that add zero functional value.
 - **Speculative Abstractions**: Eliminate speculative code, unused parameter flags, and complex design patterns built for future "what-if" requirements.
+- **Protected Blocks**: The `simplify-ignore` hook (`hooks/SIMPLIFY-IGNORE.md`) prevents the model from simplifying annotated code blocks — use for performance-critical or intentionally-unrolled sections.
 
 ## Verification Checklist
 - [ ] Refactored code preserves the exact input-output behavior.

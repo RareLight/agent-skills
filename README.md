@@ -4,54 +4,31 @@
 
 Skills encode the workflows, quality gates, and best practices that senior engineers use when building software. These ones are packaged so AI agents follow them consistently across every phase of development.
 
-![Addy's Agent Skills](https://addyosmani.com/assets/images/addys-agent-skills.jpg)
-
 ---
 
-## Commands
+## How Skills Activate
 
-7 slash commands that map to the development lifecycle. Each one activates the right skills automatically.
+Skills activate automatically based on what you're doing — designing an API triggers `api-and-interface-design`, building UI triggers `frontend-ui-engineering`, debugging triggers `debugging-and-error-recovery`, and so on. The `using-agent-skills` meta-skill discovers and invokes the right skill for the task at session start or when ambiguity arises.
 
-| What you're doing | Command | Key principle |
-|-------------------|---------|---------------|
-| Define what to build | `/spec` | Spec before code |
-| Plan how to build it | `/plan` | Small, atomic tasks |
-| Build incrementally | `/build` | One slice at a time |
-| Prove it works | `/test` | Tests are proof |
-| Review before merge | `/review` | Improve code health |
-| Simplify the code | `/code-simplify` | Clarity over cleverness |
-| Ship to production | `/ship` | Faster is safer |
-
-Skills also activate automatically based on what you're doing — designing an API triggers `api-and-interface-design`, building UI triggers `frontend-ui-engineering`, and so on.
+Each skill is a dense, imperative workflow with verification gates — not a reference doc or a generic prompt.
 
 ---
 
 ## Quick Start
 
-<details>
-<summary><b>Claude Code (recommended)</b></summary>
+### OpenCode (Recommended)
 
-**Marketplace install:**
-
-```
-/plugin marketplace add addyosmani/agent-skills
-/plugin install agent-skills@addy-agent-skills
-```
-
-> **SSH errors?** The marketplace clones repos via SSH. If you don't have SSH keys set up on GitHub, either [add your SSH key](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account) or use the full HTTPS URL to force the HTTPS cloning:
-> ```bash
-> /plugin marketplace add https://github.com/addyosmani/agent-skills.git
-> /plugin install agent-skills@addy-agent-skills
-> ```
-
-**Local / development:**
+This project is designed for OpenCode's agent-driven workflow.
 
 ```bash
-git clone https://github.com/addyosmani/agent-skills.git
-claude --plugin-dir /path/to/agent-skills
+git clone https://github.com/RareLight/agent-skills.git
 ```
 
-</details>
+The `AGENTS.md` at the project root configures OpenCode to auto-discover and invoke skills via the `skill` tool. Skills activate by intent — describe what you want and the agent selects the right skill automatically.
+
+See [docs/opencode-setup.md](docs/opencode-setup.md) for the full setup guide.
+
+### Other Tools
 
 <details>
 <summary><b>Cursor</b></summary>
@@ -65,16 +42,8 @@ Copy any `SKILL.md` into `.cursor/rules/`, or reference the full `skills/` direc
 
 Install as native skills for auto-discovery, or add to `GEMINI.md` for persistent context. See [docs/gemini-cli-setup.md](docs/gemini-cli-setup.md).
 
-**Install from the repo:**
-
 ```bash
-gemini skills install https://github.com/addyosmani/agent-skills.git --path skills
-```
-
-**Install from a local clone:**
-
-```bash
-gemini skills install ./agent-skills/skills/
+gemini skills install https://github.com/RareLight/agent-skills.git --path skills
 ```
 
 </details>
@@ -87,15 +56,6 @@ Add skill contents to your Windsurf rules configuration. See [docs/windsurf-setu
 </details>
 
 <details>
-<summary><b>OpenCode</b></summary>
-
-Uses agent-driven skill execution via AGENTS.md and the `skill` tool.
-
-See [docs/opencode-setup.md](docs/opencode-setup.md).
-
-</details>
-
-<details>
 <summary><b>GitHub Copilot</b></summary>
 
 Use agent definitions from `agents/` as Copilot personas and skill content in `.github/copilot-instructions.md`. See [docs/copilot-setup.md](docs/copilot-setup.md).
@@ -103,24 +63,24 @@ Use agent definitions from `agents/` as Copilot personas and skill content in `.
 </details>
 
 <details>
-  <summary><b>Kiro IDE & CLI </b></summary>
-  Skills for Kiro reside under ".kiro/skills/" and can be stored under Project or Global level. Kiro also supports Agents.md. See Kiro docs at https://kiro.dev/docs/skills/
+<summary><b>Kiro IDE & CLI</b></summary>
+
+Skills for Kiro reside under `.kiro/skills/` and can be stored at project or global level. Kiro also supports `AGENTS.md`. See [kiro.dev/docs/skills](https://kiro.dev/docs/skills/).
+
 </details>
 
 <details>
-<summary><b>Codex / Other Agents</b></summary>
+<summary><b>Any Agent (Generic)</b></summary>
 
-Skills are plain Markdown - they work with any agent that accepts system prompts or instruction files. See [docs/getting-started.md](docs/getting-started.md).
+Skills are plain Markdown — they work with any agent that accepts system prompts or instruction files. See [docs/getting-started.md](docs/getting-started.md).
 
 </details>
-
-
 
 ---
 
 ## All 23 Skills
 
-The commands above are entry points. The pack includes 23 skills total — 22 lifecycle skills plus the `using-agent-skills` meta-skill. Each skill is a structured workflow with steps, verification gates, and anti-rationalization tables. You can also reference any skill directly.
+The pack includes 23 skills total — 22 lifecycle skills plus the `using-agent-skills` meta-skill. Each skill is a dense, imperative workflow with verification gates. You can reference any skill directly.
 
 ### Meta - Discover which skill applies
 
@@ -209,32 +169,21 @@ Quick-reference material that skills pull in when needed:
 
 ## How Skills Work
 
-Every skill follows a consistent anatomy:
+Every skill is a streamlined, high-density Markdown file with three sections:
 
-```
-┌─────────────────────────────────────────────────┐
-│  SKILL.md                                       │
-│                                                 │
-│  ┌─ Frontmatter ─────────────────────────────┐  │
-│  │ name: lowercase-hyphen-name               │  │
-│  │ description: Guides agents through [task].│  │
-│  │              Use when…                    │  │
-│  └───────────────────────────────────────────┘  │                                                                                                
-│  Overview         → What this skill does        │
-│  When to Use      → Triggering conditions       │
-│  Process          → Step-by-step workflow       │
-│  Rationalizations → Excuses + rebuttals         │
-│  Red Flags        → Signs something's wrong     │
-│  Verification     → Evidence requirements       │
-└─────────────────────────────────────────────────┘
-```
+- **Core Workflow / Process** — Numbered step-by-step instructions the agent follows
+- **Implementation / Architectural Rules** — Constraints, boundaries, and behavioral guardrails
+- **Verification Checklist** — Evidence-backed exit criteria (test output, build result, runtime data)
 
 **Key design choices:**
 
-- **Process, not prose.** Skills are workflows agents follow, not reference docs they read. Each has steps, checkpoints, and exit criteria.
-- **Anti-rationalization.** Every skill includes a table of common excuses agents use to skip steps (e.g., "I'll add tests later") with documented counter-arguments.
-- **Verification is non-negotiable.** Every skill ends with evidence requirements - tests passing, build output, runtime data. "Seems right" is never sufficient.
-- **Progressive disclosure.** The `SKILL.md` is the entry point. Supporting references load only when needed, keeping token usage minimal.
+- **Process, not prose.** Skills are workflows agents follow, not reference docs. Steps, not facts.
+- **Verification is non-negotiable.** "Seems right" is never sufficient. Every skill requires evidence.
+- **Token-conscious.** Every section justifies its inclusion. If removing it wouldn't change agent behavior, it's removed.
+- **Progressive disclosure.** `SKILL.md` is the entry point. Supporting references load only when needed.
+- **Cross-skill references.** Skills reference each other by name instead of duplicating content.
+
+See [docs/skill-anatomy.md](docs/skill-anatomy.md) for the full format specification.
 
 ---
 
@@ -269,7 +218,6 @@ agent-skills/
 ├── agents/                            # 3 specialist personas
 ├── references/                        # 4 supplementary checklists
 ├── hooks/                             # Session lifecycle hooks
-├── .claude/commands/                  # 7 slash commands (Claude Code)
 ├── .gemini/commands/                  # 7 slash commands (Gemini CLI)
 └── docs/                              # Setup guides per tool
 ```
