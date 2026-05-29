@@ -54,5 +54,5 @@ Add these to `.cursor/rules/` when working on relevant tasks, then remove when d
 
 1. **Don't load all skills at once** - Cursor has context limits. Load 2-3 essential skills as rules and add phase-specific skills as needed.
 2. **Reference skills explicitly** - Tell Cursor "Follow the test-driven-development rules for this change" to ensure it reads the loaded rules.
-3. **Use agents for review** - Copy `agents/code-reviewer.md` content and tell Cursor to "review this diff using this code review framework."
+3. **Use agents for review** - Copy `~/.config/agent-skills/agents/code-reviewer.md` content and tell Cursor to "review this diff using this code review framework."
 4. **Load references on demand** - When working on performance, add `performance.md` to `.cursor/rules/` or paste the checklist content directly.

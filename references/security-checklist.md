@@ -135,7 +135,7 @@ res.status(500).json({
 
 ## Python-Specific Security
 
-> See also `references/python-patterns.md` for detailed Python security patterns and code examples.
+> See also `~/.config/agent-skills/references/python-patterns.md` for detailed Python security patterns and code examples.
 
 ### Dependency Auditing
 

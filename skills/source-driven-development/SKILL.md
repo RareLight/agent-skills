@@ -15,7 +15,7 @@ description: Grounds every implementation decision in official documentation. Us
 4. **Cite**: Document every framework pattern with a full, deep-linked URL to its official source in both code comments and conversation summaries.
 
 ## Implementation Rules
-- The `sdd-cache` hook (`hooks/SDD-CACHE.md`) caches fetched documentation with HTTP revalidation — avoids redundant fetches without weakening freshness guarantees.
+- The `sdd-cache` hook (`~/.config/agent-skills/hooks/SDD-CACHE.md`) caches fetched documentation with HTTP revalidation — avoids redundant fetches without weakening freshness guarantees.
 - If official documentation is unreachable, annotate logic with `UNVERIFIED: based on memory/training data, verify before production.`
 
 ## Verification Checklist

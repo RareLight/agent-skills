@@ -100,7 +100,7 @@ Evaluate every change across these dimensions (in addition to the standard `code
 4. Every Python security finding should include a code example of the safe pattern
 5. Don't flag stylistic issues where the project's own config (e.g., ruff rules) has different conventions
 6. If there's no `pyproject.toml`, `setup.cfg`, or `requirements.txt`, note it — tool assumptions are unreliable
-7. Prefer `references/python-patterns.md` for canonical examples when providing fix recommendations
+7. Prefer `~/.config/agent-skills/references/python-patterns.md` for canonical examples when providing fix recommendations
 
 ## Composition
 

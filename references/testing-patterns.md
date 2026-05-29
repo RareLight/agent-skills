@@ -237,7 +237,7 @@ test('user can create and complete a task', async ({ page }) => {
 
 ## Python Testing Patterns
 
-> See also `references/python-patterns.md` for comprehensive Python testing examples (fixtures, parameterization, async mocking, monkeypatch).
+> See also `~/.config/agent-skills/references/python-patterns.md` for comprehensive Python testing examples (fixtures, parameterization, async mocking, monkeypatch).
 
 ### Test Structure (Python)
 

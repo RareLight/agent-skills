@@ -20,7 +20,7 @@ If subagents are unavailable in the current Gemini CLI version, invoke each pers
 Constraints (from Gemini CLI's subagent model):
 - Subagents run in isolated context loops and return only their report to this main session.
 - Do not let one persona delegate to another — keep the fan-out flat.
-- For richer multi-agent collaboration where teammates talk to each other instead of just reporting back, see `references/orchestration-patterns.md`.
+- For richer multi-agent collaboration where teammates talk to each other instead of just reporting back, see `~/.config/agent-skills/references/orchestration-patterns.md`.
 
 **Persona resolution.** If you've defined your own `code-reviewer`, `security-auditor`, or `test-engineer` in `.gemini/agents/` or `~/.gemini/agents/`, those take precedence over this plugin's versions — `/ship` picks up your customizations automatically. This is intentional: plugin subagents sit at the bottom of Gemini CLI's scope priority table, so user-level definitions win by design.
 

@@ -154,7 +154,7 @@ onINP(({ value, attribution }) => {
 
 ## Python Backend Checklist
 
-> See also `references/python-patterns.md` for code examples on concurrency, GIL, and profiling.
+> See also `~/.config/agent-skills/references/python-patterns.md` for code examples on concurrency, GIL, and profiling.
 
 ### Async Safety
 - [ ] No synchronous blocking calls inside async coroutines (sync DB queries, `requests.get`, sync file I/O)

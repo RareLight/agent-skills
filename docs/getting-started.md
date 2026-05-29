@@ -16,14 +16,28 @@ Each skill is a Markdown file (`SKILL.md`) that describes a specific engineering
 git clone https://github.com/RareLight/agent-skills.git
 ```
 
-### 2. Choose a skill
+### 2. Sync skills and resources (Recommended)
+
+Run the included `Installer` script. It will synchronize all skill directories to your agent target locations (configured in [config.yaml](file:///Users/anna/Documents/Coding/agent-skills/config.yaml)) and install all central reference resources, personas, documentation, and hooks to `~/.config/agent-skills/`.
+
+```bash
+# Run the installer
+python3 ./Installer
+```
+
+You can customize the source and targets by editing [config.yaml](file:///Users/anna/Documents/Coding/agent-skills/config.yaml) or passing them as arguments:
+```bash
+python3 ./Installer --targets ~/.config/opencode/skills/ ~/.gemini/antigravity/skills/
+```
+
+### 3. Choose a skill
 
 Browse the `skills/` directory. Each subdirectory contains a `SKILL.md` with a streamlined high-density pattern:
 - **Core Workflow / Process** — step-by-step instructions
 - **Implementation / Architectural Rules** — constraints and best practices
 - **Verification Checklist** — evidence-backed exit criteria
 
-### 3. Load the skill into your agent
+### 4. Load the skill into your agent
 
 Copy the relevant `SKILL.md` content into your agent's system prompt, rules file, or conversation. The most common approaches:
 
@@ -83,7 +97,7 @@ See [skill-anatomy.md](skill-anatomy.md) for the full specification.
 
 ## Using Agents
 
-The `agents/` directory contains pre-configured agent personas:
+The `~/.config/agent-skills/agents/` directory contains pre-configured agent personas:
 
 | Agent | Purpose |
 |-------|---------|
@@ -110,7 +124,7 @@ The `using-agent-skills` meta-skill handles discovery — just describe what you
 
 ## Using References
 
-The `references/` directory contains supplementary checklists:
+The `~/.config/agent-skills/references/` directory contains supplementary checklists:
 
 | Reference | Use With |
 |-----------|----------|

@@ -6,3 +6,9 @@ source: "./skills"
 targets:
   - "~/.gemini/antigravity/skills/"
   - "~/.config/opencode/skills/"
+
+prompts:
+  source: "IDE-AGENT.md"
+  targets:
+    - "~/.config/opencode/AGENTS.md"
+    - "~/.gemini/GEMINI.md"

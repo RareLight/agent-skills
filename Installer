@@ -55,29 +55,48 @@ def load_config_yaml(file_path: str) -> dict:
             lines = f.readlines()
         
         in_targets = False
+        in_prompts = False
+        in_prompt_targets = False
         for line in lines:
-            stripped = line.strip()
-            if not stripped or stripped.startswith('#'):
+            if not line.strip() or line.strip().startswith('#'):
                 continue
-            if stripped.startswith('source:'):
-                val = stripped.split(':', 1)[1].strip()
-                if val.startswith('"') and val.endswith('"'):
-                    val = val[1:-1]
-                elif val.startswith("'") and val.endswith("'"):
-                    val = val[1:-1]
-                config["source"] = val
-            elif stripped.startswith('targets:'):
+            
+            stripped = line.strip()
+            if line.startswith('targets:'):
                 in_targets = True
+                in_prompts = False
+                in_prompt_targets = False
                 config["targets"] = []
-            elif in_targets and (stripped.startswith('-') or stripped.startswith('*')):
-                val = stripped[1:].strip()
-                if val.startswith('"') and val.endswith('"'):
-                    val = val[1:-1]
-                elif val.startswith("'") and val.endswith("'"):
-                    val = val[1:-1]
-                config["targets"].append(val)
-            elif in_targets and ':' in stripped:
+                continue
+            elif line.startswith('prompts:'):
+                in_prompts = True
                 in_targets = False
+                in_prompt_targets = False
+                continue
+            elif line.startswith('source:'):
+                val = stripped.split(':', 1)[1].strip().strip("'\"")
+                config["source"] = val
+                in_targets = False
+                in_prompts = False
+                in_prompt_targets = False
+                continue
+            
+            if stripped.startswith('-') or stripped.startswith('*'):
+                val = stripped[1:].strip().strip("'\"")
+                if in_targets:
+                    config["targets"].append(val)
+                elif in_prompt_targets:
+                    config["prompt_targets"].append(val)
+                continue
+            
+            if ':' in stripped:
+                key, val = [x.strip() for x in stripped.split(':', 1)]
+                val = val.strip("'\"")
+                if in_prompts and key == 'source':
+                    config["prompt_source"] = val
+                elif in_prompts and key == 'targets':
+                    in_prompt_targets = True
+                    config["prompt_targets"] = []
     except Exception as e:
         log_warn(f"Simple fallback YAML parser failed to read '{file_path}': {e}")
     
@@ -97,8 +116,16 @@ def main():
             log_info(f"Loaded configuration from '{COLOR_CYAN}{config_path}{COLOR_RESET}'")
 
     # Command-line defaults fallback to config file, then to hardcoded defaults
-    fallback_source = config_data.get("source", "~/skills")
+    fallback_source = config_data.get("source", "./skills")
     fallback_targets = config_data.get("targets", ["~/.gemini/antigravity/skills/", "~/.config/opencode/skills/"])
+
+    prompts_cfg = config_data.get("prompts", {})
+    if isinstance(prompts_cfg, dict):
+        fallback_prompt_source = prompts_cfg.get("source", "IDE-AGENT.md")
+        fallback_prompt_targets = prompts_cfg.get("targets", ["~/.config/opencode/AGENTS.md", "~/.gemini/GEMINI.md"])
+    else:
+        fallback_prompt_source = config_data.get("prompt_source", "IDE-AGENT.md")
+        fallback_prompt_targets = config_data.get("prompt_targets", ["~/.config/opencode/AGENTS.md", "~/.gemini/GEMINI.md"])
 
     parser = argparse.ArgumentParser(
         description="Destructive, one-way sync of global agent skills with structural verification."
@@ -113,6 +140,17 @@ def main():
         nargs="+",
         default=None,
         help=f"Target directories to sync skills into (default from config: {fallback_targets})"
+    )
+    parser.add_argument(
+        "--prompt-source",
+        default=None,
+        help=f"Source prompt file to sync (default from config: {fallback_prompt_source})"
+    )
+    parser.add_argument(
+        "--prompt-targets",
+        nargs="+",
+        default=None,
+        help=f"Target file destinations for default prompts (default from config: {fallback_prompt_targets})"
     )
     parser.add_argument(
         "--dry-run",
@@ -130,6 +168,8 @@ def main():
     # Resolve args or fall back to config
     source_val = args.source if args.source is not None else fallback_source
     targets_val = args.targets if args.targets is not None else fallback_targets
+    prompt_source_val = args.prompt_source if args.prompt_source is not None else fallback_prompt_source
+    prompt_targets_val = args.prompt_targets if args.prompt_targets is not None else fallback_prompt_targets
 
     # 2. Resolve and validate source directory
     source_path = os.path.abspath(os.path.expanduser(source_val))
@@ -170,11 +210,61 @@ def main():
         elif args.verbose:
             log_info(f"Validated structure for skill: '{skill}' (SKILL.md found)")
 
-    # 5. Resolve and process targets
+    # 5. Sync central resources to ~/.config/agent-skills/
+    central_dir = "~/.config/agent-skills/"
+    central_path = os.path.abspath(os.path.expanduser(central_dir))
+    resources_to_sync = ["references", "agents", "docs", "hooks"]
+
+    if args.dry_run:
+        print(f"\n{COLOR_YELLOW}--- DRY RUN MODE (No central resources changes will be written) ---{COLOR_RESET}")
+
+    print(f"\nProcessing central resources target: {COLOR_CYAN}{central_path}{COLOR_RESET}")
+    if not args.dry_run:
+        try:
+            os.makedirs(central_path, exist_ok=True)
+        except Exception as e:
+            log_error(f"Failed to create central resources directory '{central_path}': {e}")
+            sys.exit(1)
+
+    for folder in resources_to_sync:
+        src_dir = os.path.join(script_dir, folder)
+        dest_dir = os.path.join(central_path, folder)
+
+        if not os.path.isdir(src_dir):
+            log_warn(f"Resource directory '{folder}' not found in script directory '{script_dir}', skipping.")
+            continue
+
+        if os.path.exists(dest_dir):
+            if args.dry_run:
+                print(f"  [Would Purge] {dest_dir}")
+            else:
+                if args.verbose:
+                    log_info(f"Purging existing central folder: {dest_dir}")
+                try:
+                    if os.path.isdir(dest_dir) and not os.path.islink(dest_dir):
+                        shutil.rmtree(dest_dir)
+                    else:
+                        os.remove(dest_dir)
+                except Exception as e:
+                    log_error(f"Failed to purge '{dest_dir}': {e}")
+                    continue
+
+        if args.dry_run:
+            print(f"  [Would Copy]  {src_dir} -> {dest_dir}")
+        else:
+            if args.verbose:
+                log_info(f"Copying {src_dir} -> {dest_dir}")
+            try:
+                shutil.copytree(src_dir, dest_dir)
+            except Exception as e:
+                log_error(f"Failed to copy '{src_dir}' to '{dest_dir}': {e}")
+                continue
+
+    # 6. Resolve and process targets
     resolved_targets = [os.path.abspath(os.path.expanduser(t)) for t in targets_val]
 
     if args.dry_run:
-        print(f"\n{COLOR_YELLOW}--- DRY RUN MODE (No changes will be written) ---{COLOR_RESET}")
+        print(f"\n{COLOR_YELLOW}--- DRY RUN MODE (No target skills changes will be written) ---{COLOR_RESET}")
 
     for target in resolved_targets:
         print(f"\nProcessing target: {COLOR_CYAN}{target}{COLOR_RESET}")
@@ -219,11 +309,44 @@ def main():
                     log_error(f"Failed to copy '{src_skill_dir}' to '{dest_skill_dir}': {e}")
                     continue
 
+    # 7. Resolve and process default prompts
+    prompt_src_path = os.path.abspath(os.path.expanduser(prompt_source_val))
+    if not os.path.isabs(prompt_source_val):
+        prompt_src_path = os.path.abspath(os.path.join(script_dir, prompt_source_val))
+
+    if not os.path.isfile(prompt_src_path):
+        log_error(f"Prompt source file '{prompt_source_val}' resolved to '{prompt_src_path}', but does not exist.")
+        sys.exit(1)
+
+    resolved_prompt_targets = [os.path.abspath(os.path.expanduser(t)) for t in prompt_targets_val]
+
+    if args.dry_run:
+        print(f"\n{COLOR_YELLOW}--- DRY RUN MODE (No default prompts changes will be written) ---{COLOR_RESET}")
+
+    print(f"\nProcessing default prompts sync:")
+    for target in resolved_prompt_targets:
+        dest_parent = os.path.dirname(target)
+        if not args.dry_run:
+            try:
+                os.makedirs(dest_parent, exist_ok=True)
+            except Exception as e:
+                log_error(f"Failed to create directory '{dest_parent}': {e}")
+                continue
+
+        if args.dry_run:
+            print(f"  [Would Copy]  {prompt_src_path} -> {target}")
+        else:
+            try:
+                shutil.copy2(prompt_src_path, target)
+                log_info(f"Copied prompt: {COLOR_CYAN}{prompt_src_path}{COLOR_RESET} -> {COLOR_CYAN}{target}{COLOR_RESET}")
+            except Exception as e:
+                log_error(f"Failed to copy prompt to '{target}': {e}")
+
     if args.dry_run:
         print(f"\n{COLOR_YELLOW}--- Dry run completed. No modifications made. ---{COLOR_RESET}")
     else:
         print("")
-        log_success("All skills synchronized successfully!")
+        log_success("All skills and prompts synchronized successfully!")
         if invalid_skills:
             log_warn(f"Note: The following skill folders lacked a 'SKILL.md' file: {', '.join(invalid_skills)}")
 

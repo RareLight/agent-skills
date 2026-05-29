@@ -25,6 +25,14 @@ gemini skills install /path/to/agent-skills/skills/
 gemini skills install /path/to/agent-skills/skills/ --scope workspace
 ```
 
+**Or sync automatically using the Installer script:**
+
+You can use the included [Installer](file:///Users/anna/Documents/Coding/agent-skills/Installer) script to sync skills directly to your global Gemini/Antigravity and OpenCode config directories:
+
+```bash
+python3 ./Installer
+```
+
 Skills installed at workspace scope go into `.gemini/skills/` (or `.agents/skills/`). User-level skills go into `~/.gemini/skills/`.
 
 Once installed, verify with:
@@ -127,5 +135,5 @@ Each command invokes the corresponding skill automatically — no manual skill l
 
 1. **Prefer skills over GEMINI.md** — Skills activate on demand and keep your context window focused. Only put skills in GEMINI.md if you want them always loaded.
 2. **Skill descriptions matter** — Each SKILL.md has a `description` field in its frontmatter that tells agents when to activate it. The descriptions in this repo are optimized for auto-discovery across all supported tools by clearly stating both *what* the skill does and *when* it should be triggered.
-3. **Use agents for review** — Copy `agents/code-reviewer.md` content when requesting structured code reviews.
-4. **Combine with references** — Reference checklists from `references/` when working on specific quality areas like testing or performance.
+3. **Use agents for review** — Copy `~/.config/agent-skills/agents/code-reviewer.md` content when requesting structured code reviews.
+4. **Combine with references** — Reference checklists from `~/.config/agent-skills/references/` when working on specific quality areas like testing or performance.

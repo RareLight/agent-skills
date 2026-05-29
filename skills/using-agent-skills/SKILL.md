@@ -9,7 +9,7 @@ description: Discovers and invokes agent skills. Use when starting a session or 
 
 Agent Skills is a collection of engineering workflow skills organized by development phase. Each skill encodes a specific process that senior engineers follow. This meta-skill helps you discover and apply the right skill for your current task.
 
-This meta-skill is auto-injected at session start via the `hooks/session-start.sh` hook — no manual activation needed. The hook is configured in your harness settings.
+This meta-skill is auto-injected at session start via the `~/.config/agent-skills/hooks/session-start.sh` hook — no manual activation needed. The hook is configured in your harness settings.
 
 ## Skill Discovery
 
