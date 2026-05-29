@@ -58,6 +58,8 @@ python3 ./install --targets ~/.config/opencode/skills/ --prompt-targets ~/.confi
 Run the installer script to automatically deploy all skills, default prompts, and centralized resources:
 
 ```bash
+git clone https://github.com/RareLight/agent-skills.git
+
 # Verify sync targets (Dry Run)
 python3 ./install --dry-run
 
@@ -68,10 +70,6 @@ python3 ./install
 ### OpenCode (Recommended)
 
 This project is designed for OpenCode's agent-driven workflow.
-
-```bash
-git clone https://github.com/RareLight/agent-skills.git
-```
 
 The global `~/.config/opencode/AGENTS.md` prompt and project-level `AGENTS.md` at the project root configures OpenCode to auto-discover and invoke skills via the `skill` tool. Skills activate by intent — describe what you want and the agent selects the right skill automatically.
 
