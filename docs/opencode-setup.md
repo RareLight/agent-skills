@@ -16,27 +16,33 @@ This creates an **agent-driven workflow** where skills are selected and executed
 
 ## Installation
 
+### Option 1: Automated Sync (Recommended)
+
+You can use the automated [install](../install) script in this repository to automatically configure and sync all skills globally to your OpenCode configuration directory (`~/.config/opencode/skills/`) and write the default prompt to `~/.config/opencode/AGENTS.md`.
+
+1. Ensure your [config.yaml](../config.yaml) contains the OpenCode targets under `targets` and `prompts.targets`:
+   ```yaml
+   targets:
+     - "~/.config/opencode/skills/"
+   prompts:
+     targets:
+       - "~/.config/opencode/AGENTS.md"
+   ```
+2. Run the installer:
+   ```bash
+   python3 ./install
+   ```
+
+### Option 2: Workspace Integration (Optional / Manual)
+
+If you only want skills active for a single project workspace or want to customize project-specific skills, you can clone and place the files directly in your repository:
+
 1. Clone the repository:
-
-```bash
-git clone https://github.com/RareLight/agent-skills.git
-```
-
-2. Open the project in OpenCode.
-
-3. Ensure the following are present in your workspace:
-- `AGENTS.md` (root)
-- `skills/` directory (Optional: Placed in your workspace root only if you want to customize project-specific skills to override global ones. The automated [install](../install) script handles implementing skills globally in `~/.config/opencode/skills/` using the settings configured in `config.yaml`).
-
-No additional installation is required.
-
-**Optional: Install / Sync globally using the install script**
-
-Instead of project-scoped skills, you can synchronize skills to your global OpenCode config location (`~/.config/opencode/skills/`) using the included [install](../install) script:
-
-```bash
-python3 ./install
-```
+   ```bash
+   git clone https://github.com/RareLight/agent-skills.git
+   ```
+2. Copy the template `AGENTS.md` and the `./skills/` directory to your project root.
+3. Open the project in OpenCode. No further setup is required.
 
 ---
 
