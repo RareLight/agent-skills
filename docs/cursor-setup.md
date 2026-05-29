@@ -3,13 +3,13 @@
 ## Setup
 
 > [!NOTE]
-> Synchronizing rules to workspace folders (like `.cursor/rules/`) is **optional** and primarily used to customize rules on a per-project basis. The automated [install](file:///Users/anna/Documents/Coding/agent-skills/install) script handles installing and implementing your skills and default prompts globally for supported IDEs/CLIs (defined in `config.yaml`).
+> Synchronizing rules to workspace folders (like `.cursor/rules/`) is **optional** and primarily used to customize rules on a per-project basis. The automated [install](../install) script handles installing and implementing your skills and default prompts globally for supported IDEs/CLIs (defined in `config.yaml`).
 
 ### Option 1: Automated Sync (Recommended)
 
-You can use the automated [install](file:///Users/anna/Documents/Coding/agent-skills/install) script in this repository to automatically configure and sync rules into your project's `.cursor/rules/` folder as flat `.md` files.
+You can use the automated [install](../install) script in this repository to automatically configure and sync rules into your project's `.cursor/rules/` folder as flat `.md` files.
 
-1. Ensure your [config.yaml](file:///Users/anna/Documents/Coding/agent-skills/config.yaml) contains `./.cursor/rules/` in the `targets` list:
+1. Ensure your [config.yaml](../config.yaml) contains `./.cursor/rules/` in the `targets` list:
    ```yaml
    targets:
      - "./.cursor/rules/"

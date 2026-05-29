@@ -33,6 +33,7 @@ The installer reads configuration settings from [config.yaml](config.yaml) to de
 Clone the repo and then run the script from the root of the repository:
 
 ```bash
+# Clone the repo to a local directory
 git clone https://github.com/RareLight/agent-skills.git
 
 # Verify changes before writing them (Dry Run)

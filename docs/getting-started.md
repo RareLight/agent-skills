@@ -18,7 +18,7 @@ git clone https://github.com/RareLight/agent-skills.git
 
 ### 2. Sync skills and resources (Recommended)
 
-Run the included `install` script. It reads settings from [config.yaml](file:///Users/anna/Documents/Coding/agent-skills/config.yaml) to automatically distribute assets on your machine:
+Run the included `install` script. It reads settings from [config.yaml](../config.yaml) to automatically distribute assets on your machine:
 - **Centralized Resources**: Copies folders (`references/`, `agents/`, `docs/`, `hooks/`) to `~/.config/agent-skills/` as a single global source of truth. All synced skills and prompts point back to this location to keep duplication minimal.
 - **IDE Target Skills**: Syncs `./skills/` to target directories:
   - Global paths: `~/.gemini/antigravity/skills/` (Gemini CLI / Google Antigravity) and `~/.config/opencode/skills/` (OpenCode).
@@ -32,7 +32,7 @@ Run the included `install` script. It reads settings from [config.yaml](file:///
 python3 ./install
 ```
 
-You can customize targets and sources by editing [config.yaml](file:///Users/anna/Documents/Coding/agent-skills/config.yaml) or passing command-line arguments:
+You can customize targets and sources by editing [config.yaml](../config.yaml) or passing command-line arguments:
 ```bash
 python3 ./install --targets ~/.config/opencode/skills/ --prompt-targets ~/.config/opencode/AGENTS.md
 ```

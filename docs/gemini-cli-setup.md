@@ -29,7 +29,7 @@ gemini skills install /path/to/agent-skills/skills/ --scope workspace
 
 **Or sync automatically using the install script:**
 
-You can use the included [install](file:///Users/anna/Documents/Coding/agent-skills/install) script to sync skills directly to your global Gemini/Antigravity and OpenCode config directories:
+You can use the included [install](../install) script to sync skills directly to your global Gemini/Antigravity and OpenCode config directories:
 
 ```bash
 python3 ./install
