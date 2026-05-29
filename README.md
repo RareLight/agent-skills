@@ -267,7 +267,7 @@ See [docs/skill-anatomy.md](docs/skill-anatomy.md) for the format specification 
 ---
 
 ## Thanks
-This project is derived from a combination of the following projects:  [https://github.com/Anbeeld/AGENTS.md.git](Anbeeld/AGENTS.md) and [https://github.com/addyosmani/agent-skills.git](addyosmani/agent-skills). Many thanks to these original authors! 
+This project is derived from a combination of the following projects:  [Anbeeld/AGENTS.md](https://github.com/Anbeeld/AGENTS.md.git) and [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills.git). Many thanks to these original authors! 
 
 ## License
 
