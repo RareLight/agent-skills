@@ -53,6 +53,18 @@ python3 ./install --targets ~/.config/opencode/skills/ --prompt-targets ~/.confi
 - **`AGENTS.md` (Project)**: Copy the `AGENTS.md` template file from this repository to the root of any new project folder to define project-specific conventions. Future agent development in your project will update `AGENTS.md` as needed to give ongoing project-level guidance.
 - **Skill Customization & Overrides**: Any skills stored in your project's local `./skills/` folder always take precedence over global IDE-level skills, allowing you to customize workflows on a per-project basis.
 
+### Quick Installation
+
+Run the installer script to automatically deploy all skills, default prompts, and centralized resources:
+
+```bash
+# Verify sync targets (Dry Run)
+python3 ./install --dry-run
+
+# Execute sync
+python3 ./install
+```
+
 ### OpenCode (Recommended)
 
 This project is designed for OpenCode's agent-driven workflow.
