@@ -54,7 +54,7 @@ Copy the relevant `SKILL.md` content into your agent's system prompt, rules file
 
 **Conversation:** Reference the skill when giving instructions: "Follow the test-driven-development process for this change."
 
-### 4. Use the meta-skill for discovery
+### 5. Use the meta-skill for discovery
 
 Start with the `using-agent-skills` skill loaded. It contains a flowchart that maps task types to the appropriate skill.
 

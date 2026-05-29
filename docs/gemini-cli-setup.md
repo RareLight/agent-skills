@@ -18,13 +18,13 @@ gemini skills install https://github.com/RareLight/agent-skills.git --path skill
 
 ```bash
 git clone https://github.com/RareLight/agent-skills.git
-gemini skills install /path/to/agent-skills/skills/
+gemini skills install ./agent-skills/skills/
 ```
 
 **Install for a specific workspace only:**
 
 ```bash
-gemini skills install /path/to/agent-skills/skills/ --scope workspace
+gemini skills install ./agent-skills/skills/ --scope workspace
 ```
 
 **Or sync automatically using the install script:**
