@@ -2,7 +2,23 @@
 
 ## Setup
 
-### Option 1: Rules Directory (Recommended)
+### Option 1: Automated Sync (Recommended)
+
+You can use the automated [install](file:///Users/anna/Documents/Coding/agent-skills/install) script in this repository to automatically configure and sync rules into your project's `.cursor/rules/` folder as flat `.md` files.
+
+1. Ensure your [config.yaml](file:///Users/anna/Documents/Coding/agent-skills/config.yaml) contains `./.cursor/rules/` in the `targets` list:
+   ```yaml
+   targets:
+     - "./.cursor/rules/"
+   ```
+2. Run the installer:
+   ```bash
+   python3 ./install
+   ```
+
+The script will automatically copy the `SKILL.md` file of each skill to `.cursor/rules/<skill-name>.md` to conform to Cursor's flat rules requirement.
+
+### Option 2: Manual Copying (Rules Directory)
 
 Cursor supports a `.cursor/rules/` directory for project-specific rules:
 
@@ -18,7 +34,7 @@ cp /path/to/agent-skills/skills/incremental-implementation/SKILL.md .cursor/rule
 
 Rules in this directory are automatically loaded into Cursor's context.
 
-### Option 2: .cursorrules File
+### Option 3: .cursorrules File
 
 Create a `.cursorrules` file in your project root with the essential skills inlined:
 

@@ -18,16 +18,23 @@ git clone https://github.com/RareLight/agent-skills.git
 
 ### 2. Sync skills and resources (Recommended)
 
-Run the included `Installer` script. It will synchronize all skill directories to your agent target locations (configured in [config.yaml](file:///Users/anna/Documents/Coding/agent-skills/config.yaml)) and install all central reference resources, personas, documentation, and hooks to `~/.config/agent-skills/`.
+Run the included `install` script. It reads settings from [config.yaml](file:///Users/anna/Documents/Coding/agent-skills/config.yaml) to automatically distribute assets on your machine:
+- **Centralized Resources**: Copies folders (`references/`, `agents/`, `docs/`, `hooks/`) to `~/.config/agent-skills/` as a single global source of truth. All synced skills and prompts point back to this location to keep duplication minimal.
+- **IDE Target Skills**: Syncs `./skills/` to target directories:
+  - Global paths: `~/.gemini/antigravity/skills/` (Gemini CLI / Google Antigravity) and `~/.config/opencode/skills/` (OpenCode).
+  - Workspace paths: `./.cursor/rules/` (Cursor flat rules, e.g., `using-agent-skills.md`) and `./.github/skills/` (VS Code/Copilot folders).
+- **Default Prompts**: Copies the global instructions file `IDE-AGENT.md` to target default prompt paths:
+  - Global paths: `~/.config/opencode/AGENTS.md` (OpenCode) and `~/.gemini/GEMINI.md` (Gemini CLI / Google Antigravity).
+  - Workspace paths: `./.windsurfrules` (Windsurf) and `./.github/copilot-instructions.md` (VS Code/Copilot).
 
 ```bash
 # Run the installer
-python3 ./Installer
+python3 ./install
 ```
 
-You can customize the source and targets by editing [config.yaml](file:///Users/anna/Documents/Coding/agent-skills/config.yaml) or passing them as arguments:
+You can customize targets and sources by editing [config.yaml](file:///Users/anna/Documents/Coding/agent-skills/config.yaml) or passing command-line arguments:
 ```bash
-python3 ./Installer --targets ~/.config/opencode/skills/ ~/.gemini/antigravity/skills/
+python3 ./install --targets ~/.config/opencode/skills/ --prompt-targets ~/.config/opencode/AGENTS.md
 ```
 
 ### 3. Choose a skill

@@ -1,6 +1,6 @@
 # Project instructions
 
-Applies to this repository. These instructions override the IDE-global defaults found in `IDE-AGENT.md` / `~/.config/opencode/AGENTS.md` when they conflict.
+Applies to this repository. These instructions override the IDE-global defaults found in `~/.config/opencode/AGENTS.md` / `~/.gemini/GEMINI.md` when they conflict.
 
 ## Project
 

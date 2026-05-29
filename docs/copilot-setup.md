@@ -2,7 +2,26 @@
 
 ## Setup
 
-### Copilot Instructions
+### Option 1: Automated Sync (Recommended)
+
+You can use the automated [install](file:///Users/anna/Documents/Coding/agent-skills/install) script in this repository to automatically configure and sync both the skills folder and the custom instructions file for GitHub Copilot.
+
+1. Ensure your [config.yaml](file:///Users/anna/Documents/Coding/agent-skills/config.yaml) contains the Copilot targets under `targets` and `prompts.targets`:
+   ```yaml
+   targets:
+     - "./.github/skills/"
+   prompts:
+     targets:
+       - "./.github/copilot-instructions.md"
+   ```
+2. Run the installer:
+   ```bash
+   python3 ./install
+   ```
+
+The script will automatically copy all skills to `./.github/skills/` and write the global prompt instructions (including precedence rules) to `./.github/copilot-instructions.md`.
+
+### Option 2: Manual Copilot Instructions
 
 Copilot supports creating agent skills using a `.github/skills` or `.agents/skills` directory in your repository.
 

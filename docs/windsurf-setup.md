@@ -2,7 +2,24 @@
 
 ## Setup
 
-### Project Rules
+### Option 1: Automated Sync (Recommended)
+
+You can use the automated [install](file:///Users/anna/Documents/Coding/agent-skills/install) script in this repository to automatically configure and sync default prompts into your project's `.windsurfrules` file.
+
+1. Ensure your [config.yaml](file:///Users/anna/Documents/Coding/agent-skills/config.yaml) contains `./.windsurfrules` under the `prompts.targets` section:
+   ```yaml
+   prompts:
+     targets:
+       - "./.windsurfrules"
+   ```
+2. Run the installer:
+   ```bash
+   python3 ./install
+   ```
+
+The script will automatically copy the `IDE-AGENT.md` rules containing the meta-skill precedence rules and global workflows to `./.windsurfrules`.
+
+### Option 2: Manual Project Rules
 
 Windsurf uses `.windsurfrules` for project-specific agent instructions:
 

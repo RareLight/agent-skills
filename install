@@ -128,7 +128,7 @@ def main():
         fallback_prompt_targets = config_data.get("prompt_targets", ["~/.config/opencode/AGENTS.md", "~/.gemini/GEMINI.md"])
 
     parser = argparse.ArgumentParser(
-        description="Destructive, one-way sync of global agent skills with structural verification."
+        description="Destructive, one-way sync of global agent skills with structural verification for Gemini CLI / Google Antigravity, OpenCode, Cursor, Windsurf, and VS Code / Copilot."
     )
     parser.add_argument(
         "--source",
@@ -277,37 +277,71 @@ def main():
                 log_error(f"Failed to create target directory '{target}': {e}")
                 continue
 
+        is_flat_target = "cursor/rules" in target.lower()
+
         for skill in skills:
             src_skill_dir = os.path.join(source_path, skill)
-            dest_skill_dir = os.path.join(target, skill)
+            src_skill_md = os.path.join(src_skill_dir, "SKILL.md")
 
-            # Purge the target directory if it exists to ensure a clean slate
-            if os.path.exists(dest_skill_dir):
+            if is_flat_target:
+                dest_file = os.path.join(target, f"{skill}.md")
+                
+                # Check if SKILL.md exists before copying
+                if not os.path.isfile(src_skill_md):
+                    continue
+
+                if os.path.exists(dest_file):
+                    if args.dry_run:
+                        print(f"  [Would Purge] {dest_file}")
+                    else:
+                        if args.verbose:
+                            log_info(f"Purging existing flat rule file: {dest_file}")
+                        try:
+                            os.remove(dest_file)
+                        except Exception as e:
+                            log_error(f"Failed to purge file '{dest_file}': {e}")
+                            continue
+
                 if args.dry_run:
-                    print(f"  [Would Purge] {dest_skill_dir}")
+                    print(f"  [Would Copy]  {src_skill_md} -> {dest_file}")
                 else:
                     if args.verbose:
-                        log_info(f"Purging existing target folder: {dest_skill_dir}")
+                        log_info(f"Copying flat skill {src_skill_md} -> {dest_file}")
                     try:
-                        if os.path.isdir(dest_skill_dir) and not os.path.islink(dest_skill_dir):
-                            shutil.rmtree(dest_skill_dir)
-                        else:
-                            os.remove(dest_skill_dir)
+                        shutil.copy2(src_skill_md, dest_file)
                     except Exception as e:
-                        log_error(f"Failed to purge '{dest_skill_dir}': {e}")
+                        log_error(f"Failed to copy '{src_skill_md}' to '{dest_file}': {e}")
                         continue
-            
-            # Copy source skill directory to target
-            if args.dry_run:
-                print(f"  [Would Copy]  {src_skill_dir} -> {dest_skill_dir}")
             else:
-                if args.verbose:
-                    log_info(f"Copying {src_skill_dir} -> {dest_skill_dir}")
-                try:
-                    shutil.copytree(src_skill_dir, dest_skill_dir)
-                except Exception as e:
-                    log_error(f"Failed to copy '{src_skill_dir}' to '{dest_skill_dir}': {e}")
-                    continue
+                dest_skill_dir = os.path.join(target, skill)
+
+                # Purge the target directory if it exists to ensure a clean slate
+                if os.path.exists(dest_skill_dir):
+                    if args.dry_run:
+                        print(f"  [Would Purge] {dest_skill_dir}")
+                    else:
+                        if args.verbose:
+                            log_info(f"Purging existing target folder: {dest_skill_dir}")
+                        try:
+                            if os.path.isdir(dest_skill_dir) and not os.path.islink(dest_skill_dir):
+                                shutil.rmtree(dest_skill_dir)
+                            else:
+                                os.remove(dest_skill_dir)
+                        except Exception as e:
+                            log_error(f"Failed to purge '{dest_skill_dir}': {e}")
+                            continue
+                
+                # Copy source skill directory to target
+                if args.dry_run:
+                    print(f"  [Would Copy]  {src_skill_dir} -> {dest_skill_dir}")
+                else:
+                    if args.verbose:
+                        log_info(f"Copying folder {src_skill_dir} -> {dest_skill_dir}")
+                    try:
+                        shutil.copytree(src_skill_dir, dest_skill_dir)
+                    except Exception as e:
+                        log_error(f"Failed to copy '{src_skill_dir}' to '{dest_skill_dir}': {e}")
+                        continue
 
     # 7. Resolve and process default prompts
     prompt_src_path = os.path.abspath(os.path.expanduser(prompt_source_val))
@@ -346,7 +380,7 @@ def main():
         print(f"\n{COLOR_YELLOW}--- Dry run completed. No modifications made. ---{COLOR_RESET}")
     else:
         print("")
-        log_success("All skills and prompts synchronized successfully!")
+        log_success("All skills and prompts synchronized successfully for Gemini CLI / Google Antigravity and other configured agents/IDEs!")
         if invalid_skills:
             log_warn(f"Note: The following skill folders lacked a 'SKILL.md' file: {', '.join(invalid_skills)}")
 

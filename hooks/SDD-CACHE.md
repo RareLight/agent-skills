@@ -21,7 +21,7 @@ This hook caches fetched content on disk, but **revalidates with the origin serv
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${PROJECT_DIR}/hooks/sdd-cache-pre.sh",
+            "command": "bash ~/.config/agent-skills/hooks/sdd-cache-pre.sh",
             "timeout": 10
           }
         ]
@@ -33,7 +33,7 @@ This hook caches fetched content on disk, but **revalidates with the origin serv
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${PROJECT_DIR}/hooks/sdd-cache-post.sh",
+            "command": "bash ~/.config/agent-skills/hooks/sdd-cache-post.sh",
             "async": true,
             "timeout": 10
           }
@@ -44,7 +44,7 @@ This hook caches fetched content on disk, but **revalidates with the origin serv
 }
 ```
 
-   Replace `${PROJECT_DIR}` with the absolute path to your project root. If hooks live elsewhere, adjust the path accordingly.
+   By default, the global centralized paths are used. If you prefer to run project-specific local hooks, replace the paths with your workspace location.
 
 2. Make sure the cache directory is in your `.gitignore` (already included in this repo).
 

@@ -1,10 +1,12 @@
-# Using agent-skills with Gemini CLI
+# Using agent-skills with Gemini CLI and Google Antigravity
 
 ## Setup
 
+Gemini CLI and Google Antigravity share the same underlying configuration paths (`~/.gemini/`) and default prompt files (`~/.gemini/GEMINI.md`).
+
 ### Option 1: Install as Skills (Recommended)
 
-Gemini CLI has a native skills system that auto-discovers `SKILL.md` files in `.gemini/skills/` or `.agents/skills/` directories. Each skill activates on demand when it matches your task.
+Gemini CLI and Google Antigravity have a native skills system that auto-discovers `SKILL.md` files in `.gemini/skills/` or `.agents/skills/` directories. Each skill activates on demand when it matches your task.
 
 **Install from the repo:**
 
@@ -25,15 +27,15 @@ gemini skills install /path/to/agent-skills/skills/
 gemini skills install /path/to/agent-skills/skills/ --scope workspace
 ```
 
-**Or sync automatically using the Installer script:**
+**Or sync automatically using the install script:**
 
-You can use the included [Installer](file:///Users/anna/Documents/Coding/agent-skills/Installer) script to sync skills directly to your global Gemini/Antigravity and OpenCode config directories:
+You can use the included [install](file:///Users/anna/Documents/Coding/agent-skills/install) script to sync skills directly to your global Gemini/Antigravity and OpenCode config directories:
 
 ```bash
-python3 ./Installer
+python3 ./install
 ```
 
-Skills installed at workspace scope go into `.gemini/skills/` (or `.agents/skills/`). User-level skills go into `~/.gemini/skills/`.
+Skills installed at workspace scope go into `.gemini/skills/` (or `.agents/skills/`). User-level skills go into `~/.gemini/skills/` (which both Gemini CLI and Google Antigravity read).
 
 Once installed, verify with:
 
@@ -41,7 +43,7 @@ Once installed, verify with:
 /skills list
 ```
 
-Gemini CLI injects skill names and descriptions into the prompt automatically. When it recognizes a matching task, it asks permission to activate the skill before loading its full instructions.
+Gemini CLI and Google Antigravity inject skill names and descriptions into the prompt automatically. When they recognize a matching task, they ask permission to activate the skill before loading its full instructions.
 
 ### Option 2: GEMINI.md (Persistent Context)
 
@@ -95,11 +97,11 @@ Many skills in this pack leverage [Model Context Protocol (MCP)](https://modelco
 - `browser-testing-with-devtools` uses the `chrome-devtools` MCP extension.
 - `performance-optimization` can benefit from performance-related MCP tools.
 
-To enable these, ensure you have the relevant MCP extensions installed in your Gemini CLI configuration (`~/.gemini/config.json`).
+To enable these, ensure you have the relevant MCP extensions installed in your Gemini CLI / Google Antigravity configuration (`~/.gemini/config.json`).
 
 ### Session Hooks
 
-Gemini CLI supports session lifecycle hooks. You can use these to automatically inject context or run validation scripts at the start of a session.
+Gemini CLI and Google Antigravity support session lifecycle hooks. You can use these to automatically inject context or run validation scripts at the start of a session.
 
 To replicate the `agent-skills` experience from other tools, you can configure a `SessionStart` hook that reminds you of the available skills or loads a meta-skill.
 
@@ -115,7 +117,7 @@ This is useful when you want to ensure a specific workflow is followed without w
 
 ## Slash Commands
 
-The repo ships 7 slash commands under `.gemini/commands/` that map to the development lifecycle. Gemini CLI auto-discovers them when you run from the project root.
+The repo ships 7 slash commands under `.gemini/commands/` that map to the development lifecycle. Gemini CLI and Google Antigravity auto-discover them when you run from the project root.
 
 | Command | What it does |
 |---------|--------------|
@@ -129,7 +131,7 @@ The repo ships 7 slash commands under `.gemini/commands/` that map to the develo
 
 Each command invokes the corresponding skill automatically — no manual skill loading required.
 
-> **Note:** Use `/planning` instead of `/plan` — `/plan` conflicts with a Gemini CLI internal command name.
+> **Note:** Use `/planning` instead of `/plan` — `/plan` conflicts with an internal command name in Gemini CLI / Google Antigravity.
 
 ## Usage Tips
 
