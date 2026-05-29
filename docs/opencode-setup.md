@@ -31,12 +31,12 @@ git clone https://github.com/RareLight/agent-skills.git
 
 No additional installation is required.
 
-**Optional: Install / Sync globally using the Installer script**
+**Optional: Install / Sync globally using the install script**
 
-Instead of project-scoped skills, you can synchronize skills to your global OpenCode config location (`~/.config/opencode/skills/`) using the included [Installer](file:///Users/anna/Documents/Coding/agent-skills/Installer) script:
+Instead of project-scoped skills, you can synchronize skills to your global OpenCode config location (`~/.config/opencode/skills/`) using the included [install](file:///Users/anna/Documents/Coding/agent-skills/install) script:
 
 ```bash
-python3 ./Installer
+python3 ./install
 ```
 
 ---

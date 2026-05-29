@@ -16,15 +16,15 @@ Each skill is a dense, imperative workflow with verification gates — not a ref
 
 ## Installation and Syncing
 
-The repository includes a robust Python-based [install](file:///Users/anna/Documents/Coding/agent-skills/install) script that automates global and workspace-level skill synchronization, centralized resource installation, and default prompts setup.
+The repository includes a robust Python-based [install](install) script that automates global skill and centralized resource installation, along with default IDE-global prompts to provide agent guidance
 
 ### How it Works
 
-The installer reads configuration settings from [config.yaml](file:///Users/anna/Documents/Coding/agent-skills/config.yaml) to deploy assets to the correct target folders on your machine:
+The installer reads configuration settings from [config.yaml](config.yaml) to deploy assets to the correct target folders on your machine:
 1. **Skills**: Synchronizes the `./skills/` directory to target agent paths (e.g., global targets like `~/.gemini/antigravity/skills/` and `~/.config/opencode/skills/`, and workspace-level targets like `./.cursor/rules/` and `./.github/skills/`).
    - *Note on Cursor*: Cursor rules are automatically copied as flat files (`target/<name>.md`) containing only the skill content, rather than folder structures.
 2. **Centralized Resources**: Copies reference folders (`references/`, `agents/`, `docs/`, `hooks/`) to a single global directory: `~/.config/agent-skills/`. All installed skills and configurations point back to this single source of truth to avoid duplication.
-3. **Default Prompts**: Copies the global rules file (`IDE-AGENT.md`) to individual IDE default prompt paths, such as `~/.config/opencode/AGENTS.md` (OpenCode), `~/.gemini/GEMINI.md` (Gemini CLI / Google Antigravity), `./.windsurfrules` (Windsurf), and `./.github/copilot-instructions.md` (VS Code / Copilot).
+3. **Default Prompts**: Copies the global rules file (`GLOBAL-PROMPT.md`) to individual IDE default prompt paths, such as `~/.config/opencode/AGENTS.md` (OpenCode), `~/.gemini/GEMINI.md` (Gemini CLI / Google Antigravity), `./.windsurfrules` (Windsurf), and `./.github/copilot-instructions.md` (VS Code / Copilot).
 
 ### Usage
 
@@ -38,7 +38,7 @@ python3 ./install --dry-run
 python3 ./install
 ```
 
-You can customize targets and sources by modifying [config.yaml](file:///Users/anna/Documents/Coding/agent-skills/config.yaml) or passing them directly as command-line arguments:
+You can customize targets and sources by modifying [config.yaml](config.yaml) or passing them directly as command-line arguments:
 ```bash
 python3 ./install --targets ~/.config/opencode/skills/ --prompt-targets ~/.config/opencode/AGENTS.md
 ```
@@ -46,6 +46,11 @@ python3 ./install --targets ~/.config/opencode/skills/ --prompt-targets ~/.confi
 ---
 
 ## Quick Start
+
+### Core Concepts: Global vs Project Rules
+- **`GLOBAL-PROMPT.md` (Global)**: Serves as your IDE's global base prompt (copied by the installer to `~/.gemini/GEMINI.md` or `~/.config/opencode/AGENTS.md`). It sets up general agent behavior and precedence rules.
+- **`AGENTS.md` (Project)**: Copy the `AGENTS.md` template file from this repository to the root of any new project folder to define project-specific conventions.
+- **Skill Customization & Overrides**: Any skills stored in your project's local `./skills/` folder always take precedence over global IDE-level skills, allowing you to customize workflows on a per-project basis.
 
 ### OpenCode (Recommended)
 

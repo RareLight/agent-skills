@@ -10,7 +10,7 @@ targets:
   - "./.github/skills/"
 
 prompts:
-  source: "IDE-AGENT.md"
+  source: "GLOBAL-PROMPT.md"
   targets:
     - "~/.gemini/GEMINI.md"
     - "~/.config/opencode/AGENTS.md"

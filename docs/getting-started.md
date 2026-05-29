@@ -23,7 +23,7 @@ Run the included `install` script. It reads settings from [config.yaml](file:///
 - **IDE Target Skills**: Syncs `./skills/` to target directories:
   - Global paths: `~/.gemini/antigravity/skills/` (Gemini CLI / Google Antigravity) and `~/.config/opencode/skills/` (OpenCode).
   - Workspace paths: `./.cursor/rules/` (Cursor flat rules, e.g., `using-agent-skills.md`) and `./.github/skills/` (VS Code/Copilot folders).
-- **Default Prompts**: Copies the global instructions file `IDE-AGENT.md` to target default prompt paths:
+- **Default Prompts**: Copies the global instructions file `GLOBAL-PROMPT.md` to target default prompt paths:
   - Global paths: `~/.config/opencode/AGENTS.md` (OpenCode) and `~/.gemini/GEMINI.md` (Gemini CLI / Google Antigravity).
   - Workspace paths: `./.windsurfrules` (Windsurf) and `./.github/copilot-instructions.md` (VS Code/Copilot).
 

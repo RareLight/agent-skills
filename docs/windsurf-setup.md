@@ -17,7 +17,7 @@ You can use the automated [install](file:///Users/anna/Documents/Coding/agent-sk
    python3 ./install
    ```
 
-The script will automatically copy the `IDE-AGENT.md` rules containing the meta-skill precedence rules and global workflows to `./.windsurfrules`.
+The script will automatically copy the `GLOBAL-PROMPT.md` rules containing the meta-skill precedence rules and global workflows to `./.windsurfrules`.
 
 ### Option 2: Manual Project Rules
 

@@ -121,10 +121,10 @@ def main():
 
     prompts_cfg = config_data.get("prompts", {})
     if isinstance(prompts_cfg, dict):
-        fallback_prompt_source = prompts_cfg.get("source", "IDE-AGENT.md")
+        fallback_prompt_source = prompts_cfg.get("source", "GLOBAL-PROMPT.md")
         fallback_prompt_targets = prompts_cfg.get("targets", ["~/.config/opencode/AGENTS.md", "~/.gemini/GEMINI.md"])
     else:
-        fallback_prompt_source = config_data.get("prompt_source", "IDE-AGENT.md")
+        fallback_prompt_source = config_data.get("prompt_source", "GLOBAL-PROMPT.md")
         fallback_prompt_targets = config_data.get("prompt_targets", ["~/.config/opencode/AGENTS.md", "~/.gemini/GEMINI.md"])
 
     parser = argparse.ArgumentParser(
