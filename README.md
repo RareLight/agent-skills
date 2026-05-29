@@ -30,9 +30,11 @@ The installer reads configuration settings from [config.yaml](config.yaml) to de
 
 ### Usage
 
-Run the script from the root of the repository:
+Clone the repo and then run the script from the root of the repository:
 
 ```bash
+git clone https://github.com/RareLight/agent-skills.git
+
 # Verify changes before writing them (Dry Run)
 python3 ./install --dry-run
 
@@ -58,11 +60,6 @@ python3 ./install --targets ~/.config/opencode/skills/ --prompt-targets ~/.confi
 Run the installer script to automatically deploy all skills, default prompts, and centralized resources:
 
 ```bash
-git clone https://github.com/RareLight/agent-skills.git
-
-# Verify sync targets (Dry Run)
-python3 ./install --dry-run
-
 # Execute sync
 python3 ./install
 ```
