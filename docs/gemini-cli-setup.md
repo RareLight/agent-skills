@@ -45,25 +45,13 @@ Once installed, verify with:
 
 Gemini CLI and Google Antigravity inject skill names and descriptions into the prompt automatically. When they recognize a matching task, they ask permission to activate the skill before loading its full instructions.
 
-### Option 2: GEMINI.md (Persistent Context)
+### Option 2: Manual Configuration
 
-For skills you want always loaded as persistent project context (rather than on-demand activation), add them to your project's `GEMINI.md`:
+If you prefer to configure your workspace manually, configure these three parts:
 
-```bash
-# Create GEMINI.md with core skills as persistent context
-cat /path/to/agent-skills/skills/incremental-implementation/SKILL.md > GEMINI.md
-echo -e "\n---\n" >> GEMINI.md
-cat /path/to/agent-skills/skills/code-review-and-quality/SKILL.md >> GEMINI.md
-```
-
-You can also modularize by importing from separate files:
-
-```markdown
-# Project Instructions
-
-@skills/test-driven-development/SKILL.md
-@skills/incremental-implementation/SKILL.md
-```
+1. **Global Prompt**: Place a copy of `GLOBAL-PROMPT.md` at `~/.gemini/GEMINI.md` to establish global default rules.
+2. **Project AGENTS.md**: Copy the template `AGENTS.md` file from this repository to your project's root folder (`./AGENTS.md`) to define project-specific conventions.
+3. **Skills**: Manually copy the `skills/` folder to `~/.gemini/skills/` (for user scope) or `.gemini/skills/` (for workspace scope). Alternatively, you can copy essential skills directly to your project's `GEMINI.md` file for persistent context (e.g. `cat skills/incremental-implementation/SKILL.md > GEMINI.md`).
 
 Use `/memory show` to verify loaded context, and `/memory reload` to refresh after changes.
 

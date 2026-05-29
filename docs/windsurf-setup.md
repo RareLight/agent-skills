@@ -22,25 +22,13 @@ You can use the automated [install](../install) script in this repository to aut
 
 The script will automatically copy the `GLOBAL-PROMPT.md` rules containing the meta-skill precedence rules and global workflows to `./.windsurfrules`.
 
-### Option 2: Manual Project Rules
+### Option 2: Manual Configuration
 
-Windsurf uses `.windsurfrules` for project-specific agent instructions:
+If you prefer to configure your workspace manually, configure these three parts:
 
-```bash
-# Create a combined rules file from your most important skills
-cat /path/to/agent-skills/skills/test-driven-development/SKILL.md > .windsurfrules
-echo "\n---\n" >> .windsurfrules
-cat /path/to/agent-skills/skills/incremental-implementation/SKILL.md >> .windsurfrules
-echo "\n---\n" >> .windsurfrules
-cat /path/to/agent-skills/skills/code-review-and-quality/SKILL.md >> .windsurfrules
-```
-
-### Global Rules
-
-For skills you want across all projects, add them to Windsurf's global rules:
-
-1. Open Windsurf → Settings → AI → Global Rules
-2. Paste the content of your most-used skills
+1. **Global Prompt**: Open Windsurf → Settings → AI → Global Rules and paste the contents of `GLOBAL-PROMPT.md`.
+2. **Project AGENTS.md**: Copy the template `AGENTS.md` file from this repository to your project's root folder (`./AGENTS.md`) to define project-specific conventions.
+3. **Skills**: Create a `.windsurfrules` file in your project root and copy the contents of the essential skills you want directly into it (e.g. `cat skills/test-driven-development/SKILL.md > .windsurfrules`).
 
 ## Recommended Configuration
 

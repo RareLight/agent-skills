@@ -24,47 +24,19 @@ You can use the automated [install](../install) script in this repository to aut
 
 The script will automatically copy all skills to `./.github/skills/` and write the global prompt instructions (including precedence rules) to `./.github/copilot-instructions.md`.
 
-### Option 2: Manual Copilot Instructions
+### Option 2: Manual Configuration
 
-Copilot supports creating agent skills using a `.github/skills` or `.agents/skills` directory in your repository.
+If you prefer to configure your workspace manually, configure these three parts:
 
-```bash
-mkdir -p .github
-
-# Create files for essential skills
-cat /path/to/agent-skills/skills/test-driven-development/SKILL.md > .github/skills/test-driven-development/SKILL.md
-cat /path/to/agent-skills/skills/code-review-and-quality/SKILL.md > .github/skills/code-review-and-quality/SKILL.md
-```
-
-For more details, refer [Creating agent skills for GitHub Copilot](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/create-skills).
-
-### Agent Personas (*.agent.md)
-
-Copilot supports specialized agent personas. Use the agent-skills agents:
-
-> **Important:** GitHub Copilot requires custom agent files to be named `*.agent.md`.
-> Files named `*.md` are silently ignored by Copilot.
-> See [VS Code custom agents docs](https://code.visualstudio.com/docs/copilot/customization/custom-agents#_custom-agent-file-structure) for details.
-
-```bash
-# Create the agents directory and copy agent definitions
-mkdir -p .github/agents
-cp ~/.config/agent-skills/agents/code-reviewer.md .github/agents/code-reviewer.agent.md
-cp ~/.config/agent-skills/agents/test-engineer.md .github/agents/test-engineer.agent.md
-cp ~/.config/agent-skills/agents/security-auditor.md .github/agents/security-auditor.agent.md
-```
-
-Invoke agents in Copilot Chat:
-- `@code-reviewer Review this PR`
-- `@test-engineer Analyze test coverage for this module`
-- `@security-auditor Check this endpoint for vulnerabilities`
-
-### Custom Instructions (User Level)
-
-For skills you want across all repositories:
-
-1. Open VS Code → Settings → GitHub Copilot → Custom Instructions
-2. Add your most-used skill summaries
+1. **Global Prompt**: In VS Code, go to **Settings → GitHub Copilot → Custom Instructions** and paste the contents of `GLOBAL-PROMPT.md` (or save it directly as `.github/copilot-instructions.md` in your project root to set project-level instructions).
+2. **Project AGENTS.md**: Copy the template `AGENTS.md` file from this repository to your project's root folder (`./AGENTS.md`) to define project-specific conventions.
+3. **Skills**: Create a `.github/skills/` directory in your workspace and copy individual skills (e.g. `skills/test-driven-development/SKILL.md` to `.github/skills/test-driven-development/SKILL.md`). For specialized agent personas (`*.agent.md`), create a `.github/agents/` directory and copy agent files:
+   ```bash
+   mkdir -p .github/agents
+   cp ~/.config/agent-skills/agents/code-reviewer.md .github/agents/code-reviewer.agent.md
+   cp ~/.config/agent-skills/agents/test-engineer.md .github/agents/test-engineer.agent.md
+   cp ~/.config/agent-skills/agents/security-auditor.md .github/agents/security-auditor.agent.md
+   ```
 
 ## Recommended Configuration
 

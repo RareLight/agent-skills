@@ -21,32 +21,13 @@ You can use the automated [install](../install) script in this repository to aut
 
 The script will automatically copy the `SKILL.md` file of each skill to `.cursor/rules/<skill-name>.md` to conform to Cursor's flat rules requirement.
 
-### Option 2: Manual Copying (Rules Directory)
+### Option 2: Manual Configuration
 
-Cursor supports a `.cursor/rules/` directory for project-specific rules:
+If you prefer to configure your workspace manually, configure these three parts:
 
-```bash
-# Create the rules directory
-mkdir -p .cursor/rules
-
-# Copy skills you want as rules
-cp /path/to/agent-skills/skills/test-driven-development/SKILL.md .cursor/rules/test-driven-development.md
-cp /path/to/agent-skills/skills/code-review-and-quality/SKILL.md .cursor/rules/code-review-and-quality.md
-cp /path/to/agent-skills/skills/incremental-implementation/SKILL.md .cursor/rules/incremental-implementation.md
-```
-
-Rules in this directory are automatically loaded into Cursor's context.
-
-### Option 3: .cursorrules File
-
-Create a `.cursorrules` file in your project root with the essential skills inlined:
-
-```bash
-# Generate a combined rules file
-cat /path/to/agent-skills/skills/test-driven-development/SKILL.md > .cursorrules
-echo "\n---\n" >> .cursorrules
-cat /path/to/agent-skills/skills/code-review-and-quality/SKILL.md >> .cursorrules
-```
+1. **Global Prompt**: Paste the contents of `GLOBAL-PROMPT.md` into Cursor's global settings under **Cursor Settings > Features > Rules for AI**.
+2. **Project AGENTS.md**: Copy the template `AGENTS.md` file from this repository to your project's root folder (`./AGENTS.md`) to define project-specific conventions.
+3. **Skills**: Create a `.cursor/rules/` directory and copy the `SKILL.md` file of the skills you need directly to `.cursor/rules/<skill-name>.md` (e.g. `cp skills/test-driven-development/SKILL.md .cursor/rules/test-driven-development.md`). Alternatively, you can concatenate essential skill rules inside a `.cursorrules` file in your project root.
 
 ## Recommended Configuration
 

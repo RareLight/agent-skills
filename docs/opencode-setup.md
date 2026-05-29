@@ -35,14 +35,11 @@ You can use the automated [install](../install) script in this repository to aut
 
 ### Option 2: Workspace Integration (Optional / Manual)
 
-If you only want skills active for a single project workspace or want to customize project-specific skills, you can clone and place the files directly in your repository:
+If you only want skills active for a single project workspace or want to customize project-specific skills, manually configure these three parts:
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/RareLight/agent-skills.git
-   ```
-2. Copy the template `AGENTS.md` and the `./skills/` directory to your project root.
-3. Open the project in OpenCode. No further setup is required.
+1. **Global Prompt**: Place a copy of `GLOBAL-PROMPT.md` at `~/.config/opencode/AGENTS.md` to establish global default rules.
+2. **Project AGENTS.md**: Copy the template `AGENTS.md` file from this repository to your project's root folder (`./AGENTS.md`) to define project-specific conventions.
+3. **Skills**: Copy the `./skills/` directory from this repository directly into your project's root folder (`./skills/`) to make all workflow skills available locally.
 
 ---
 
