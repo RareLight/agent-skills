@@ -2,6 +2,9 @@
 
 ## Setup
 
+> [!NOTE]
+> Synchronizing rules to workspace folders (like `.windsurfrules`) is **optional** and primarily used to customize rules on a per-project basis. The automated [install](file:///Users/anna/Documents/Coding/agent-skills/install) script handles installing and implementing your skills and default prompts globally for supported IDEs/CLIs (defined in `config.yaml`).
+
 ### Option 1: Automated Sync (Recommended)
 
 You can use the automated [install](file:///Users/anna/Documents/Coding/agent-skills/install) script in this repository to automatically configure and sync default prompts into your project's `.windsurfrules` file.
