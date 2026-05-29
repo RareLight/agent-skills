@@ -2,6 +2,12 @@
 
 Applies to this repository. These instructions override the IDE-global defaults found in `~/.config/opencode/AGENTS.md` / `~/.gemini/GEMINI.md` when they conflict.
 
+> [!IMPORTANT]
+> **Instructions for Future AI Coding Agents**:
+> This file is a living document and a starting point for project development.
+> - **Update, Don't Overwrite**: When initializing or discovering project details (e.g., via `/init` or context exploration), append/integrate your discoveries into this file. **NEVER** overwrite, replace, or delete existing contents.
+> - **Evolve Project Context**: Update the project structure, stack descriptions, conventions, commands, and boundaries as the codebase evolves, but always preserve the core skill rules, workflows, and overrides.
+
 ## Project
 
 A collection of production-grade engineering skills for AI coding agents.

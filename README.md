@@ -16,15 +16,17 @@ Each skill is a dense, imperative workflow with verification gates — not a ref
 
 ## Installation and Syncing
 
-The repository includes a robust Python-based [install](install) script that automates global skill and centralized resource installation, along with default IDE-global prompts to provide agent guidance
+This repo includes a robust Python-based [install](install) script that automates global skill and centralized resource installation, along with default global prompts to provide agent guidance at the IDE level.
 
 ### How it Works
 
 The installer reads configuration settings from [config.yaml](config.yaml) to deploy assets to the correct target folders on your machine:
 1. **Skills**: Synchronizes the `./skills/` directory to target agent paths (e.g., global targets like `~/.gemini/antigravity/skills/` and `~/.config/opencode/skills/`, and workspace-level targets like `./.cursor/rules/` and `./.github/skills/`).
    - *Note on Cursor*: Cursor rules are automatically copied as flat files (`target/<name>.md`) containing only the skill content, rather than folder structures.
+   
 2. **Centralized Resources**: Copies reference folders (`references/`, `agents/`, `docs/`, `hooks/`) to a single global directory: `~/.config/agent-skills/`. All installed skills and configurations point back to this single source of truth to avoid duplication.
-3. **Default Prompts**: Copies the global rules file (`GLOBAL-PROMPT.md`) to individual IDE default prompt paths, such as `~/.config/opencode/AGENTS.md` (OpenCode), `~/.gemini/GEMINI.md` (Gemini CLI / Google Antigravity), `./.windsurfrules` (Windsurf), and `./.github/copilot-instructions.md` (VS Code / Copilot).
+
+3. **Default Prompts**: Copies the global prompt rules (`GLOBAL-PROMPT.md`) to individual IDE default prompt paths, such as `~/.config/opencode/AGENTS.md` (OpenCode), `~/.gemini/GEMINI.md` (Gemini CLI / Google Antigravity), `./.windsurfrules` (Windsurf), and `./.github/copilot-instructions.md` (VS Code / Copilot).
 
 ### Usage
 
@@ -42,14 +44,13 @@ You can customize targets and sources by modifying [config.yaml](config.yaml) or
 ```bash
 python3 ./install --targets ~/.config/opencode/skills/ --prompt-targets ~/.config/opencode/AGENTS.md
 ```
-
 ---
 
 ## Quick Start
 
 ### Core Concepts: Global vs Project Rules
 - **`GLOBAL-PROMPT.md` (Global)**: Serves as your IDE's global base prompt (copied by the installer to `~/.gemini/GEMINI.md` or `~/.config/opencode/AGENTS.md`). It sets up general agent behavior and precedence rules.
-- **`AGENTS.md` (Project)**: Copy the `AGENTS.md` template file from this repository to the root of any new project folder to define project-specific conventions.
+- **`AGENTS.md` (Project)**: Copy the `AGENTS.md` template file from this repository to the root of any new project folder to define project-specific conventions. Future agent development in your project will update `AGENTS.md` as needed to give ongoing project-level guidance.
 - **Skill Customization & Overrides**: Any skills stored in your project's local `./skills/` folder always take precedence over global IDE-level skills, allowing you to customize workflows on a per-project basis.
 
 ### OpenCode (Recommended)
@@ -60,7 +61,7 @@ This project is designed for OpenCode's agent-driven workflow.
 git clone https://github.com/RareLight/agent-skills.git
 ```
 
-The `AGENTS.md` at the project root configures OpenCode to auto-discover and invoke skills via the `skill` tool. Skills activate by intent — describe what you want and the agent selects the right skill automatically.
+The global `~/.config/opencode/AGENTS.md` prompt and project-level `AGENTS.md` at the project root configures OpenCode to auto-discover and invoke skills via the `skill` tool. Skills activate by intent — describe what you want and the agent selects the right skill automatically.
 
 See [docs/opencode-setup.md](docs/opencode-setup.md) for the full setup guide.
 
@@ -95,13 +96,6 @@ The installer automatically copies the global prompt contents to `./.windsurfrul
 <summary><b>GitHub Copilot</b></summary>
 
 The installer automates workspace-level sync to `./.github/skills/` and `./.github/copilot-instructions.md`. See [docs/copilot-setup.md](docs/copilot-setup.md) for detailed custom agents/personas setup.
-
-</details>
-
-<details>
-<summary><b>Kiro IDE & CLI</b></summary>
-
-Skills for Kiro reside under `.kiro/skills/` and can be stored at project or global level. Kiro also supports `AGENTS.md`. See [kiro.dev/docs/skills](https://kiro.dev/docs/skills/).
 
 </details>
 
