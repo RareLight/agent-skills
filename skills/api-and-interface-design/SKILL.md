@@ -7,6 +7,7 @@ risk: high
 requires: [repository-read]
 fallback: Document the contract and compatibility assumptions in the change handoff.
 outputs: [contract, compatibility-notes, validation-plan]
+related_skills: []
 ---
 
 # API and Interface Design

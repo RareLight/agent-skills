@@ -7,6 +7,7 @@ risk: high
 requires: [repository-read]
 fallback: Perform static boundary review and state unavailable audit tools or environment gaps.
 outputs: [threat-notes, mitigations, security-evidence]
+related_skills: []
 ---
 
 # Security and Hardening

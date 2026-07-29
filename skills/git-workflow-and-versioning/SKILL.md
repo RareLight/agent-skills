@@ -7,6 +7,7 @@ risk: medium
 requires: [git]
 fallback: Report the recommended VCS steps without performing them.
 outputs: [vcs-status, commit-or-branch-plan]
+related_skills: []
 ---
 
 # Git Workflow and Versioning

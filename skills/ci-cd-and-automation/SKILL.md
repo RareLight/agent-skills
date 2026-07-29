@@ -7,6 +7,7 @@ risk: high
 requires: [ci-context]
 fallback: Validate configuration statically and document unavailable CI execution.
 outputs: [pipeline-change, quality-gates, rollback-notes]
+related_skills: []
 ---
 
 # CI/CD and Automation

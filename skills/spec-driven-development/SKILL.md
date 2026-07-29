@@ -7,6 +7,7 @@ risk: high
 requires: [writable-workspace]
 fallback: Record concise acceptance criteria and assumptions in the task handoff.
 outputs: [specification, acceptance-criteria, risk-decisions]
+related_skills: []
 ---
 
 # Spec-Driven Development

@@ -7,6 +7,7 @@ risk: medium
 requires: [repository-read]
 fallback: Review available artifacts and state what could not be inspected or executed.
 outputs: [findings, verdict, verification-gaps]
+related_skills: []
 ---
 
 # Code Review and Quality

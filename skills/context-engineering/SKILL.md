@@ -7,6 +7,7 @@ risk: low
 requires: [repository-read]
 fallback: Read the target, nearby tests, and local guidance before acting.
 outputs: [context-set, assumptions, gaps]
+related_skills: []
 ---
 
 # Context Engineering

@@ -12,6 +12,9 @@ import os
 import sys
 import shutil
 import argparse
+import subprocess
+import tempfile
+import uuid
 
 # ANSI color codes for rich, professional CLI output
 COLOR_RESET = "\033[0m"
@@ -33,6 +36,40 @@ def log_warn(msg: str):
 
 def log_error(msg: str):
     print(f"{COLOR_RED}[ERROR]{COLOR_RESET} {COLOR_BOLD}{msg}{COLOR_RESET}", file=sys.stderr)
+
+def replace_copy(src: str, dest: str, is_dir: bool) -> None:
+    """Stage a copy beside its destination, then replace with rollback on failure."""
+    parent = os.path.dirname(dest)
+    os.makedirs(parent, exist_ok=True)
+    staging_root = tempfile.mkdtemp(prefix=".agent-skills-stage-", dir=parent)
+    staged = os.path.join(staging_root, os.path.basename(dest))
+    backup = f"{dest}.agent-skills-backup-{uuid.uuid4().hex}"
+    moved_existing = False
+    try:
+        if is_dir:
+            shutil.copytree(src, staged)
+        else:
+            shutil.copy2(src, staged)
+        if os.path.lexists(dest):
+            os.replace(dest, backup)
+            moved_existing = True
+        os.replace(staged, dest)
+        if moved_existing:
+            if os.path.isdir(backup) and not os.path.islink(backup):
+                shutil.rmtree(backup)
+            else:
+                os.remove(backup)
+    except Exception:
+        if not os.path.lexists(dest) and moved_existing and os.path.lexists(backup):
+            os.replace(backup, dest)
+        raise
+    finally:
+        shutil.rmtree(staging_root, ignore_errors=True)
+        if os.path.lexists(backup) and os.path.lexists(dest):
+            if os.path.isdir(backup) and not os.path.islink(backup):
+                shutil.rmtree(backup)
+            else:
+                os.remove(backup)
 
 def load_config_yaml(file_path: str) -> dict:
     """Loads source and targets from YAML file. Has zero-dependency fallback parser."""
@@ -162,6 +199,16 @@ def main():
         action="store_true",
         help="Enable detailed diagnostic logging"
     )
+    parser.add_argument(
+        "--include-hooks",
+        action="store_true",
+        help="Sync Claude-specific hooks; requires a plugin layout or AGENT_SKILLS_META_SKILL configuration"
+    )
+    parser.add_argument(
+        "--resources-target",
+        default=None,
+        help="Central resource destination (default: ~/.config/agent-skills/)"
+    )
 
     args = parser.parse_args()
 
@@ -210,10 +257,27 @@ def main():
         elif args.verbose:
             log_info(f"Validated structure for skill: '{skill}' (SKILL.md found)")
 
+    if invalid_skills:
+        log_error(f"Invalid skill folders: {', '.join(invalid_skills)}")
+        sys.exit(1)
+
+    validator = os.path.join(script_dir, "scripts", "validate-skills.py")
+    if not os.path.isfile(validator):
+        log_error(f"Required validator not found: '{validator}'")
+        sys.exit(1)
+    validation = subprocess.run([sys.executable, validator, "--skills-dir", source_path])
+    if validation.returncode != 0:
+        log_error("Source validation failed; no files were synchronized.")
+        sys.exit(validation.returncode)
+
+    had_errors = False
+
     # 5. Sync central resources to ~/.config/agent-skills/
-    central_dir = "~/.config/agent-skills/"
+    central_dir = args.resources_target or "~/.config/agent-skills/"
     central_path = os.path.abspath(os.path.expanduser(central_dir))
-    resources_to_sync = ["references", "agents", "docs", "hooks", "adapters"]
+    resources_to_sync = ["references", "agents", "docs", "adapters"]
+    if args.include_hooks:
+        resources_to_sync.append("hooks")
 
     if args.dry_run:
         print(f"\n{COLOR_YELLOW}--- DRY RUN MODE (No central resources changes will be written) ---{COLOR_RESET}")
@@ -234,31 +298,14 @@ def main():
             log_warn(f"Resource directory '{folder}' not found in script directory '{script_dir}', skipping.")
             continue
 
-        if os.path.exists(dest_dir):
-            if args.dry_run:
-                print(f"  [Would Purge] {dest_dir}")
-            else:
-                if args.verbose:
-                    log_info(f"Purging existing central folder: {dest_dir}")
-                try:
-                    if os.path.isdir(dest_dir) and not os.path.islink(dest_dir):
-                        shutil.rmtree(dest_dir)
-                    else:
-                        os.remove(dest_dir)
-                except Exception as e:
-                    log_error(f"Failed to purge '{dest_dir}': {e}")
-                    continue
-
         if args.dry_run:
-            print(f"  [Would Copy]  {src_dir} -> {dest_dir}")
+            print(f"  [Would Replace] {src_dir} -> {dest_dir}")
         else:
-            if args.verbose:
-                log_info(f"Copying {src_dir} -> {dest_dir}")
             try:
-                shutil.copytree(src_dir, dest_dir)
+                replace_copy(src_dir, dest_dir, is_dir=True)
             except Exception as e:
-                log_error(f"Failed to copy '{src_dir}' to '{dest_dir}': {e}")
-                continue
+                log_error(f"Failed to replace '{dest_dir}': {e}")
+                had_errors = True
 
     # 6. Resolve and process targets
     resolved_targets = [os.path.abspath(os.path.expanduser(t)) for t in targets_val]
@@ -269,14 +316,6 @@ def main():
     for target in resolved_targets:
         print(f"\nProcessing target: {COLOR_CYAN}{target}{COLOR_RESET}")
         
-        # Ensure target base directory exists
-        if not args.dry_run:
-            try:
-                os.makedirs(target, exist_ok=True)
-            except Exception as e:
-                log_error(f"Failed to create target directory '{target}': {e}")
-                continue
-
         is_flat_target = "cursor/rules" in target.lower()
 
         for skill in skills:
@@ -290,58 +329,25 @@ def main():
                 if not os.path.isfile(src_skill_md):
                     continue
 
-                if os.path.exists(dest_file):
-                    if args.dry_run:
-                        print(f"  [Would Purge] {dest_file}")
-                    else:
-                        if args.verbose:
-                            log_info(f"Purging existing flat rule file: {dest_file}")
-                        try:
-                            os.remove(dest_file)
-                        except Exception as e:
-                            log_error(f"Failed to purge file '{dest_file}': {e}")
-                            continue
-
                 if args.dry_run:
-                    print(f"  [Would Copy]  {src_skill_md} -> {dest_file}")
+                    print(f"  [Would Replace] {src_skill_md} -> {dest_file}")
                 else:
-                    if args.verbose:
-                        log_info(f"Copying flat skill {src_skill_md} -> {dest_file}")
                     try:
-                        shutil.copy2(src_skill_md, dest_file)
+                        replace_copy(src_skill_md, dest_file, is_dir=False)
                     except Exception as e:
-                        log_error(f"Failed to copy '{src_skill_md}' to '{dest_file}': {e}")
-                        continue
+                        log_error(f"Failed to replace '{dest_file}': {e}")
+                        had_errors = True
             else:
                 dest_skill_dir = os.path.join(target, skill)
 
-                # Purge the target directory if it exists to ensure a clean slate
-                if os.path.exists(dest_skill_dir):
-                    if args.dry_run:
-                        print(f"  [Would Purge] {dest_skill_dir}")
-                    else:
-                        if args.verbose:
-                            log_info(f"Purging existing target folder: {dest_skill_dir}")
-                        try:
-                            if os.path.isdir(dest_skill_dir) and not os.path.islink(dest_skill_dir):
-                                shutil.rmtree(dest_skill_dir)
-                            else:
-                                os.remove(dest_skill_dir)
-                        except Exception as e:
-                            log_error(f"Failed to purge '{dest_skill_dir}': {e}")
-                            continue
-                
-                # Copy source skill directory to target
                 if args.dry_run:
-                    print(f"  [Would Copy]  {src_skill_dir} -> {dest_skill_dir}")
+                    print(f"  [Would Replace] {src_skill_dir} -> {dest_skill_dir}")
                 else:
-                    if args.verbose:
-                        log_info(f"Copying folder {src_skill_dir} -> {dest_skill_dir}")
                     try:
-                        shutil.copytree(src_skill_dir, dest_skill_dir)
+                        replace_copy(src_skill_dir, dest_skill_dir, is_dir=True)
                     except Exception as e:
-                        log_error(f"Failed to copy '{src_skill_dir}' to '{dest_skill_dir}': {e}")
-                        continue
+                        log_error(f"Failed to replace '{dest_skill_dir}': {e}")
+                        had_errors = True
 
     # 7. Resolve and process default prompts
     prompt_src_path = os.path.abspath(os.path.expanduser(prompt_source_val))
@@ -359,30 +365,24 @@ def main():
 
     print(f"\nProcessing default prompts sync:")
     for target in resolved_prompt_targets:
-        dest_parent = os.path.dirname(target)
-        if not args.dry_run:
-            try:
-                os.makedirs(dest_parent, exist_ok=True)
-            except Exception as e:
-                log_error(f"Failed to create directory '{dest_parent}': {e}")
-                continue
-
         if args.dry_run:
-            print(f"  [Would Copy]  {prompt_src_path} -> {target}")
+            print(f"  [Would Replace] {prompt_src_path} -> {target}")
         else:
             try:
-                shutil.copy2(prompt_src_path, target)
+                replace_copy(prompt_src_path, target, is_dir=False)
                 log_info(f"Copied prompt: {COLOR_CYAN}{prompt_src_path}{COLOR_RESET} -> {COLOR_CYAN}{target}{COLOR_RESET}")
             except Exception as e:
-                log_error(f"Failed to copy prompt to '{target}': {e}")
+                log_error(f"Failed to replace prompt at '{target}': {e}")
+                had_errors = True
 
     if args.dry_run:
         print(f"\n{COLOR_YELLOW}--- Dry run completed. No modifications made. ---{COLOR_RESET}")
-    else:
+    elif not had_errors:
         print("")
         log_success("All skills and prompts synchronized successfully for Gemini CLI / Google Antigravity and other configured agents/IDEs!")
-        if invalid_skills:
-            log_warn(f"Note: The following skill folders lacked a 'SKILL.md' file: {', '.join(invalid_skills)}")
+    if had_errors:
+        log_error("Synchronization completed with errors; review the messages above.")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()

@@ -7,6 +7,7 @@ risk: medium
 requires: [dependency-metadata, network-optional]
 fallback: Identify the precise unverified assumption and avoid claiming source verification.
 outputs: [version-evidence, source-notes-or-gap]
+related_skills: []
 ---
 
 # Source-Driven Development

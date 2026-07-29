@@ -44,3 +44,21 @@ if (hasJq) {
 
 console.log('session-start JSON payload OK');
 NODE
+
+installed_skill_dir="$(mktemp -d)"
+trap 'rm -f "$tmp_payload"; rm -rf "$installed_skill_dir"' EXIT
+mkdir -p "$installed_skill_dir/using-agent-skills"
+cp skills/using-agent-skills/SKILL.md "$installed_skill_dir/using-agent-skills/SKILL.md"
+
+installed_payload="$(AGENT_SKILLS_META_SKILL="$installed_skill_dir/using-agent-skills/SKILL.md" bash hooks/session-start.sh)"
+INSTALLED_PAYLOAD="$installed_payload" node <<'NODE'
+const payload = JSON.parse(process.env.INSTALLED_PAYLOAD);
+if (payload.priority !== 'IMPORTANT') {
+  throw new Error(`expected installed-layout IMPORTANT priority, got ${payload.priority}`);
+}
+if (!payload.message.includes('# Using Agent Skills')) {
+  throw new Error('installed layout did not inject the meta-skill');
+}
+NODE
+
+echo 'session-start installed-layout payload OK'

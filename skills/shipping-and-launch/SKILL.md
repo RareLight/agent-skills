@@ -7,6 +7,7 @@ risk: high
 requires: [deployment-context]
 fallback: Produce a release-readiness assessment and state unavailable operational checks.
 outputs: [release-plan, rollback-plan, launch-evidence]
+related_skills: []
 ---
 
 # Shipping and Launch

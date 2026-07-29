@@ -7,6 +7,7 @@ risk: medium
 requires: [diagnostic-tools]
 fallback: Inspect available artifacts and state the missing reproduction or environment evidence.
 outputs: [root-cause-or-ranked-hypotheses, fix, regression-evidence]
+related_skills: []
 ---
 
 # Debugging and Error Recovery

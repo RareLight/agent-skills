@@ -7,6 +7,7 @@ risk: medium
 requires: [browser-tool-optional]
 fallback: Run project browser tests or static/UI tests; report the missing runtime check.
 outputs: [runtime-evidence-or-gap]
+related_skills: []
 ---
 
 # Browser Testing

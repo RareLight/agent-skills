@@ -1,28 +1,24 @@
 ---
 name: doubt-driven-development
-description: Subjects every non-trivial decision to a fresh-context adversarial review before it stands. Use when correctness matters more than speed, when working in unfamiliar code, when stakes are high (production, security-sensitive logic, irreversible operations), or any time a confident output would be cheaper to verify now than to debug later.
+description: Performs an adversarial check of high-impact engineering assumptions. Use for unfamiliar, concurrent, irreversible, security-sensitive, or high-blast-radius decisions.
+applies_when: The cost of an unnoticed assumption exceeds the cost of an independent review.
+skip_when: The decision is conventional, reversible, and already well covered by tests or local contracts.
+risk: high
+requires: [independent-reviewer-optional]
+fallback: Perform a structured self-review against the relevant contract and risk list.
+outputs: [claim, review-findings, disposition]
+related_skills: []
 ---
 
 # Doubt-Driven Development
 
-## Objective & Posture
-- **In-flight Questioning**: Intercept logical assumptions *during* development, not at final review. Subject non-trivial decisions to an adversarial "disproof" context while changes remain cheap.
-- **Non-Trivial Decision Signals**: New branching conditions, module boundary crossings, assertions unverified by compilers (concurrency, thread-safety, idempotence), and irreversible database migrations.
+1. State the claim, contract, evidence, and blast radius.
+2. Obtain an independent review when a suitable reviewer or model is available; provide the artifact and contract, not persuasive reasoning.
+3. Classify findings as contract issue, actionable defect, accepted trade-off, or noise.
+4. Stop after the review no longer produces material findings; do not require a fixed number of cycles or vendor-specific escalation.
 
-## The 5-Step Doubt Cycle
-1. **CLAIM**: Formulate the engineering claim and its risk blast radius in 2-3 lines.
-2. **EXTRACT**: Isolate only the exact artifact code/proposal and its target contract constraint. Strip out reasoning, journey history, and your claim to prevent bias.
-3. **DOUBT**: Invoke a fresh-context reviewer with a strictly adversarial "find critical flaws" prompt. In interactive mode, **always offer** cross-model CLI escalation (Gemini/Codex) to catch shared blind spots.
-4. **RECONCILE**: Categorize every finding as: *Contract Misread* (amend contract), *Actionable* (modify code), *Valid Trade-off* (document risk), or *Noise*.
-5. **STOP**: Terminate the loop when findings become trivial, 3 cycles conclude, or the user overrides.
+## Verification checklist
 
-## Safety & Rules
-- **No Personas Invoking Personas**: Never add this skill to subagents or automated personas to prevent illegal nested spawning.
-- **Read-Only Sandboxes**: Always run external cross-model CLI review commands inside strict, read-only sandboxes to block instruction injection from untrusted code artifacts.
-
-## Verification Checklist
-- [ ] The claim was explicitly documented before code was written.
-- [ ] The reviewer received only the raw artifact and contract—never the claim or reasoning.
-- [ ] Reviewer output was verified against the artifact text rather than blindly accepted.
-- [ ] Loop completed within a strict maximum of 3 cycles.
-- [ ] Cross-model CLI review was explicitly offered to the user in interactive sessions.
+- [ ] The decision and risk are explicit.
+- [ ] Findings were checked against the artifact rather than accepted blindly.
+- [ ] Remaining trade-offs are documented.

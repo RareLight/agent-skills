@@ -7,6 +7,7 @@ risk: high
 requires: [usage-evidence]
 fallback: Propose a migration plan and state missing consumer or traffic evidence.
 outputs: [migration-plan, compatibility-notes, retirement-evidence]
+related_skills: []
 ---
 
 # Deprecation and Migration

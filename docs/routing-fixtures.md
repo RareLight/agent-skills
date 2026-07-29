@@ -1,5 +1,7 @@
 # Routing Fixtures
 
+The executable fixture source is `fixtures/routing.json`; `routing-manifest.json` defines required and allowed skills for each task class.
+
 | Request | Expected routing | Minimum evidence |
 |---|---|---|
 | Fix a typo in a README | Fast path | Readback or markdown check |

@@ -24,7 +24,7 @@ The installer reads configuration settings from [config.yaml](config.yaml) to de
 1. **Skills**: Synchronizes the `./skills/` directory to target agent paths (e.g., global targets like `~/.gemini/antigravity/skills/` and `~/.config/opencode/skills/`, and workspace-level targets like `./.cursor/rules/` and `./.github/skills/`).
    - *Note on Cursor*: Cursor rules are automatically copied as flat files (`target/<name>.md`) containing only the skill content, rather than folder structures.
    
-2. **Centralized Resources**: Copies reference folders (`references/`, `agents/`, `docs/`, `hooks/`, `adapters/`) to a single global directory: `~/.config/agent-skills/`. The portable core and adapters remain available without embedding platform assumptions in skills.
+2. **Centralized Resources**: Copies reference folders (`references/`, `agents/`, `docs/`, `adapters/`) to a single global directory: `~/.config/agent-skills/`. Claude-specific hooks are opt-in through `--include-hooks`.
 
 3. **Default Prompts**: Copies the global prompt rules (`GLOBAL-PROMPT.md`) to individual IDE default prompt paths, such as `~/.config/opencode/AGENTS.md` (OpenCode), `~/.gemini/GEMINI.md` (Gemini CLI / Google Antigravity), `./.windsurfrules` (Windsurf), and `./.github/copilot-instructions.md` (VS Code / Copilot).
 
@@ -205,6 +205,8 @@ Quick-reference material that skills pull in when needed:
 - `docs/routing-model.md` selects the smallest applicable skill and defines the maintenance fast path.
 - `adapters/` contain harness-specific paths, commands, and integration guidance.
 - `scripts/validate-skills.py` validates metadata and portable-skill boundaries.
+- `scripts/validate-routing-fixtures.py` validates machine-readable routing coverage.
+- `scripts/validate-generated-artifacts.py` detects drift in tracked Copilot outputs; regenerate them with `scripts/sync-generated-artifacts.py`.
 
 ## How Skills Work
 

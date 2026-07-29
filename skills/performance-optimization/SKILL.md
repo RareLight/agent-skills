@@ -7,6 +7,7 @@ risk: medium
 requires: [profiling-tools-optional]
 fallback: Use available timing, query, bundle, or static evidence and state measurement limits.
 outputs: [baseline, change, post-change-evidence]
+related_skills: []
 ---
 
 # Performance Optimization

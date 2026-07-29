@@ -1,34 +1,25 @@
 ---
 name: frontend-ui-engineering
-description: Builds production-quality UIs. Use when building or modifying user-facing interfaces. Use when creating components, implementing layouts, managing state, or when the output needs to look and feel production-quality rather than AI-generated.
+description: Builds accessible, maintainable user interfaces that follow the active product and codebase conventions. Use when modifying user-facing browser or native UI.
+applies_when: The request changes layout, interaction, presentation state, or accessibility.
+skip_when: No user-facing interface changes.
+risk: medium
+requires: [ui-runtime-optional]
+fallback: Use component tests, static review, and documented visual/runtime gaps.
+outputs: [ui-change, accessibility-evidence]
+related_skills: []
 ---
 
 # Frontend UI Engineering
 
-## Architectural Rules
-- **Colocate Assets**: Keep markup, styling, tests, and component logic grouped together in dedicated folders.
-- **Separation of Concerns**: Isolate API/data-fetching from presentation components. Keep presentation pure and deterministic.
-- **State Selection**: Choose the simplest state scope: local DOM/state first → URL params for shareable state → shared global store/events only when necessary. Avoid tight coupling between sibling elements.
+1. Follow the existing design system and component conventions; establish a minimal local convention only when none exists.
+2. Keep presentation, data access, and state ownership appropriately separated; choose the smallest state scope that supports the behavior.
+3. Cover loading, error, and empty states when the changed flow can encounter them; do not invent decorative requirements.
+4. Use semantic controls, keyboard behavior, accessible names, focus management, and contrast appropriate to the interface. Modals must contain focus; views must not create unintended focus traps.
+5. Verify relevant viewport and assistive-technology behavior with available tools.
 
-## Design Integrity (Anti-AI Aesthetic)
-- **Contrast & Radii**: Follow the design system spacing grid, typographic hierarchy, and color tokens. Never use arbitrary pixels or raw hex values. Ensure strict AA color contrast (≥4.5:1).
-- **Copy & Spacing**: Avoid generic layouts, extreme gradients, indigo-everything palettes, and oversized/uneven margins. Always test layouts with realistic content (wrapping, overflow, varying lengths).
-- **Responsive-First**: Design mobile-first using responsive grids (Flexbox/Grid with breakpoints). Test at 320px, 768px, 1024px, and 1440px.
-- **States**: Build native error boundary handlers, skeleton loading animations (not just spinners), and meaningful empty-state illustrations with actionable buttons.
+## Verification checklist
 
-## Accessibility Standards (WCAG 2.1 AA)
-- **Keyboard Access**: Ensure all interactive components are focusable and operable via Keyboard (`Tab`, `Shift+Tab`, `Enter`, `Space`, `ESC`). Trap focus within modals.
-- **Aria Attributes**: Include meaningful labels (`aria-label` / `htmlFor` / `aria-labelledby`) on all interactive or image elements lacking visible text.
-- **Dynamic Announcements**: Use `aria-live="polite"` or `role="status"` to announce dynamic page modifications.
-- **Verification Layers**:
-  1. *Automated*: Run Lighthouse Accessibility (target ≥90) and `axe` checks.
-  2. *Keyboard Audit*: Test the page entirely with the keyboard.
-  3. *Screen Reader*: Verify navigation layout and dynamic changes with a screen reader.
-- **Supplemental Reference**: `~/.config/agent-skills/references/accessibility-checklist.md` — detailed keyboard, screen reader, and ARIA verification.
-
-## Verification Checklist
-- [ ] Component renders clean with zero browser console errors or accessibility violations.
-- [ ] Keyboard navigation is completely functional (no focus traps).
-- [ ] View is responsive across all major viewports (320px to 1440px).
-- [ ] Loading, error, and empty states are built and polished.
-- [ ] Visual styling perfectly matches the design system token guidelines.
+- [ ] The UI follows existing visual and interaction conventions.
+- [ ] Changed controls are operable and named appropriately.
+- [ ] Relevant states and responsive behavior have evidence or a reported gap.

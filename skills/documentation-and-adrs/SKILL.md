@@ -7,6 +7,7 @@ risk: low
 requires: [writable-workspace]
 fallback: Include rationale and links in the final handoff.
 outputs: [documentation-or-adr]
+related_skills: []
 ---
 
 # Documentation and ADRs

@@ -7,6 +7,7 @@ risk: medium
 requires: [tests-optional]
 fallback: Propose simplifications without editing behavior-sensitive code.
 outputs: [simplified-change, behavior-evidence]
+related_skills: []
 ---
 
 # Code Simplification

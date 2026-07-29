@@ -1,29 +1,23 @@
 ---
 name: git-workflow-and-versioning
-description: Structures git workflow practices. Use when making any code change. Use when committing, branching, resolving conflicts, or when you need to organize work across multiple parallel streams.
+description: Organizes repository history and collaboration safely. Use when branching, committing, resolving conflicts, or preparing a reviewable change.
+applies_when: Version-control operations are requested or required by repository policy.
+skip_when: The user has not authorized VCS changes and the project does not require them.
+risk: medium
+requires: [git]
+fallback: Report the recommended VCS steps without performing them.
+outputs: [vcs-status, commit-or-branch-plan]
+related_skills: []
 ---
 
 # Git Workflow and Versioning
 
-## Workflow & History Rules
-- **Trunk-Based Development**: Keep `main` always deployable. Deliver work in short-lived feature branches (`feature/` or `fix/`) merged within 1-3 days.
-- **Commit Early & Atomically**: Commit each thin, vertical slice as soon as it lints, builds, and passes tests. Never package unrelated features, refactors, or styling into a single commit.
-- **Descriptive, Why-Focused Messages**: Format messages as `<type>: <short imperative description>` (e.g., `feat: validate registration email`). Use the commit body to explain *why* the change was implemented.
-- **Refactoring Partitioning**: Submit refactoring commits independently of functional additions to make PRs cleanly reviewable.
+1. Inspect repository status and project branch policy before VCS changes.
+2. Keep changes reviewable and logically coherent; use branches, worktrees, and commits according to project policy.
+3. Review staged content, scan for secrets, and run proportionate checks before an authorized commit.
+4. Never force-push protected history or bypass required verification without explicit authorization.
 
-## Branch & Worktree Strategy
-- **Isolation**: Use `git worktree add` to run parallel agent tasks across isolated directories without branch-switching friction.
-- **Clean Sweeps**: Delete branches immediately upon merge. Use feature flags rather than branching to hide partial implementations.
+## Verification checklist
 
-## Pre-Commit Hygiene
-Run these steps before every commit:
-1. `git diff --staged` - Review the precise changes.
-2. Secret Scan - Scan stages for passwords, private keys, API keys, or tokens.
-3. Quality checks - Verify that the project builds, lints, and passes tests.
-
-## Verification Checklist
-- [ ] Every commit represents exactly one logical change.
-- [ ] Commit types follow standard conventions (`feat`, `fix`, `refactor`, `test`, `docs`).
-- [ ] Target branch builds with zero compile or linter errors.
-- [ ] All tests pass on the staged changeset.
-- [ ] `.gitignore` accurately blocks `.env`, dependencies, build folders, and platform caches.
+- [ ] VCS actions were authorized and consistent with repository policy.
+- [ ] Staged changes and applicable checks were reviewed.

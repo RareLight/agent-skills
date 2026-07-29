@@ -7,6 +7,7 @@ risk: medium
 requires: [ui-runtime-optional]
 fallback: Use component tests, static review, and documented visual/runtime gaps.
 outputs: [ui-change, accessibility-evidence]
+related_skills: []
 ---
 
 # Frontend UI Engineering

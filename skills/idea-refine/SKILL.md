@@ -7,6 +7,7 @@ risk: medium
 requires: [interactive-user-optional]
 fallback: Produce a concise options-and-trade-offs note.
 outputs: [recommended-direction, assumptions, scope]
+related_skills: []
 ---
 
 # Idea Refine

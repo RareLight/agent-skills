@@ -7,6 +7,7 @@ risk: medium
 requires: [test-runner]
 fallback: Use the most reliable available verification and explain why an automated test was not added.
 outputs: [behavioral-test-or-alternative-evidence]
+related_skills: []
 ---
 
 # Test-Driven Development

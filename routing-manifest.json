@@ -1,0 +1,9 @@
+{
+  "maintenance": {"required_skills": [], "allowed_skills": ["code-simplification", "documentation-and-adrs"]},
+  "bug_fix": {"required_skills": ["debugging-and-error-recovery"], "allowed_skills": ["test-driven-development", "incremental-implementation"]},
+  "public_api": {"required_skills": ["api-and-interface-design"], "allowed_skills": ["spec-driven-development", "test-driven-development", "security-and-hardening"]},
+  "migration": {"required_skills": ["planning-and-task-breakdown", "deprecation-and-migration"], "allowed_skills": ["spec-driven-development", "test-driven-development"]},
+  "ui": {"required_skills": ["frontend-ui-engineering"], "allowed_skills": ["browser-testing-with-devtools", "test-driven-development"]},
+  "incident": {"required_skills": ["debugging-and-error-recovery"], "allowed_skills": ["error-handling-and-resilience", "security-and-hardening"]},
+  "tool_constrained": {"required_skills": [], "allowed_skills": ["context-engineering", "source-driven-development", "test-driven-development"]}
+}

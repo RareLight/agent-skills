@@ -7,6 +7,7 @@ risk: high
 requires: [independent-reviewer-optional]
 fallback: Perform a structured self-review against the relevant contract and risk list.
 outputs: [claim, review-findings, disposition]
+related_skills: []
 ---
 
 # Doubt-Driven Development

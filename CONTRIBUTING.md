@@ -6,7 +6,7 @@ Thanks for your interest in contributing! This project is a collection of produc
 
 1. Create a directory under `skills/` with a kebab-case name
 2. Add a `SKILL.md` following the format in [docs/skill-anatomy.md](docs/skill-anatomy.md)
-3. Include YAML frontmatter with `name` and `description` fields
+3. Include all required frontmatter described in [docs/skill-anatomy.md](docs/skill-anatomy.md), including routing metadata and `related_skills`
 4. Ensure the `description` starts with what the skill does (third person), then includes one or more `Use when` trigger conditions
 
 ### Skill Quality Bar
@@ -23,7 +23,7 @@ Skills should be:
 Every new skill must have:
 
 - `SKILL.md` in the skill directory
-- YAML frontmatter with valid `name` and `description`
+- Valid, schema-complete YAML frontmatter
 
 Skills follow the streamlined high-density pattern defined in `docs/skill-anatomy.md`:
 
@@ -48,9 +48,21 @@ This is a recommended pattern, not a rigid template: equivalent headings that se
 - Preserve the existing structure and tone
 - Verify YAML frontmatter remains valid after edits
 
-## Testing Hooks
+## Validation and Testing
 
-The session-start hook (`hooks/session-start.sh`) injects the `using-agent-skills` meta-skill into every new opencode session. A regression test at `hooks/session-start-test.sh` validates the hook's JSON payload — both when `jq` is available and when it isn't.
+Run the portable checks before opening a PR that changes skills, routing, or distribution:
+
+```bash
+python3 scripts/validate-skills.py
+python3 scripts/validate-routing-fixtures.py
+python3 scripts/validate-generated-artifacts.py
+bash scripts/test-install.sh
+python3 ./install --dry-run
+```
+
+## Testing Claude Hooks
+
+The optional Claude session-start hook (`hooks/session-start.sh`) injects the `using-agent-skills` meta-skill when it can locate it through the plugin layout or `AGENT_SKILLS_META_SKILL`. A regression test at `hooks/session-start-test.sh` validates both layouts and the JSON payload.
 
 Run it before opening any PR that touches:
 

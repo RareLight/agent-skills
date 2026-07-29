@@ -7,6 +7,7 @@ risk: medium
 requires: [repository-read]
 fallback: State a brief inline sequence and verification plan.
 outputs: [ordered-tasks, dependency-notes, verification-plan]
+related_skills: []
 ---
 
 # Planning and Task Breakdown

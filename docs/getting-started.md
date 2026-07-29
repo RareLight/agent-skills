@@ -19,7 +19,7 @@ git clone https://github.com/RareLight/agent-skills.git
 ### 2. Sync skills and resources (Recommended)
 
 Run the included `install` script. It reads settings from [config.yaml](../config.yaml) to automatically distribute assets on your machine:
-- **Centralized Resources**: Copies folders (`references/`, `agents/`, `docs/`, `hooks/`, `adapters/`) to `~/.config/agent-skills/` as a single global source of truth. Harness-specific instructions live in adapters; portable skills remain tool-neutral.
+- **Centralized Resources**: Copies folders (`references/`, `agents/`, `docs/`, `adapters/`) to `~/.config/agent-skills/` as a single global source of truth. Claude-specific hooks require the opt-in `--include-hooks` flag.
 - **IDE Target Skills**: Syncs `./skills/` to target directories:
   - Global paths: `~/.gemini/antigravity/skills/` (Gemini CLI / Google Antigravity) and `~/.config/opencode/skills/` (OpenCode).
   - Workspace paths: `./.cursor/rules/` (Cursor flat rules, e.g., `using-agent-skills.md`) and `./.github/skills/` (VS Code/Copilot folders).
@@ -56,13 +56,13 @@ Copy the relevant `SKILL.md` content into your agent's system prompt, rules file
 
 ### 5. Use the meta-skill for discovery
 
-Start with the `using-agent-skills` skill loaded. It contains a flowchart that maps task types to the appropriate skill.
+Start with the `using-agent-skills` skill loaded. It selects the smallest applicable workflow using task conditions, risk, and available capabilities.
 
 ## Recommended Setup
 
 ### Minimal (Start here)
 
-Load three essential skills into your rules file:
+Load the portable core plus only the skills that match the work. For a project that needs default quality coverage, start with:
 
 1. **spec-driven-development** — For defining what to build
 2. **test-driven-development** — For proving it works
@@ -72,7 +72,7 @@ These three cover the most critical quality gaps in AI-assisted development.
 
 ### Full Lifecycle
 
-For comprehensive coverage, load skills by phase:
+For significant feature work, a typical sequence is:
 
 ```
 Starting a project:  spec-driven-development → planning-and-task-breakdown
@@ -116,7 +116,7 @@ Load an agent definition when you need specialized review. For example, ask your
 
 ## Intent Mapping
 
-Skills activate automatically based on the type of work:
+Skills are selected based on task conditions, not a mandatory lifecycle:
 
 | Intent | Skill(s) Invoked |
 |--------|------------------|

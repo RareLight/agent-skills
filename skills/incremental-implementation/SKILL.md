@@ -7,6 +7,7 @@ risk: medium
 requires: [writable-workspace]
 fallback: Make one scoped change and run the narrowest relevant verification.
 outputs: [implemented-change, verification-evidence]
+related_skills: []
 ---
 
 # Incremental Implementation

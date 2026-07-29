@@ -7,6 +7,7 @@ risk: high
 requires: [architecture-context]
 fallback: Document the failure mode, safe default, and unavailable resilience mechanism.
 outputs: [failure-policy, verification-evidence]
+related_skills: []
 ---
 
 # Error Handling and Resilience

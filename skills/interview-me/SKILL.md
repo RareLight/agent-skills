@@ -7,6 +7,7 @@ risk: medium
 requires: [interactive-user]
 fallback: State assumptions, choose a reversible implementation, and identify the decision that needs confirmation.
 outputs: [confirmed-intent, assumptions]
+related_skills: []
 ---
 
 # Interview Me

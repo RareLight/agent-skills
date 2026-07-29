@@ -1,0 +1,9 @@
+[
+  {"id": "readme-typo", "task_type": "maintenance", "expected_skills": [], "minimum_evidence": "Readback or markdown check."},
+  {"id": "localized-bug", "task_type": "bug_fix", "expected_skills": ["debugging-and-error-recovery", "test-driven-development"], "minimum_evidence": "Reproduction or focused test."},
+  {"id": "public-endpoint", "task_type": "public_api", "expected_skills": ["api-and-interface-design", "spec-driven-development", "test-driven-development"], "minimum_evidence": "Contract and boundary tests."},
+  {"id": "database-schema", "task_type": "migration", "expected_skills": ["planning-and-task-breakdown", "deprecation-and-migration"], "minimum_evidence": "Migration and rollback evidence."},
+  {"id": "ui-flow", "task_type": "ui", "expected_skills": ["frontend-ui-engineering", "browser-testing-with-devtools"], "minimum_evidence": "UI test or stated runtime gap."},
+  {"id": "production-incident", "task_type": "incident", "expected_skills": ["debugging-and-error-recovery"], "minimum_evidence": "Reproduction, scope, and mitigation."},
+  {"id": "no-shell-browser", "task_type": "tool_constrained", "expected_skills": ["context-engineering"], "minimum_evidence": "Static evidence and explicit capability gaps."}
+]

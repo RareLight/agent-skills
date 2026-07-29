@@ -1,6 +1,6 @@
 # OpenCode Setup
 
-This guide explains how to use Agent Skills with OpenCode's agent-driven workflow — automatic skill selection, lifecycle-driven workflows, and strict process enforcement.
+This guide explains how to use Agent Skills with OpenCode's agent-driven workflow—capability-aware skill selection and proportional verification.
 
 ## Overview
 
@@ -57,7 +57,7 @@ OpenCode agents are instructed (via `AGENTS.md`) to:
 
 - Detect when a skill applies
 - Invoke the `skill` tool
-- Follow the skill exactly
+- Apply the selected skill in proportion to its stated risk and skip conditions
 
 ### 2. Automatic Skill Invocation
 
@@ -72,9 +72,9 @@ Examples:
 
 The user does **not** need to explicitly request skills.
 
-### 3. Lifecycle Mapping
+### 3. Conditional Routing
 
-The development lifecycle is encoded implicitly:
+The router selects the smallest applicable set of skills. Typical examples include:
 
 - DEFINE → `spec-driven-development`
 - PLAN → `planning-and-task-breakdown`
@@ -95,10 +95,9 @@ Add authentication to this app
 ```
 
 Agent behavior:
-- Detects feature work
-- Invokes `spec-driven-development`
-- Produces a spec before writing code
-- Moves to planning and implementation skills
+- Detects whether the feature is significant, public, irreversible, or materially ambiguous
+- Uses `spec-driven-development` only when those conditions apply
+- Uses planning and implementation skills as dependencies and risk warrant
 
 ### Bug Fix
 
@@ -124,14 +123,14 @@ Agent behavior:
 
 ---
 
-## Agent Expectations (Critical)
+## Agent Expectations
 
 For OpenCode to work correctly, the agent must follow these rules:
 
-- Always check if a skill applies before acting
-- If a skill applies, it MUST be used
-- Never skip required workflows (spec, plan, test, etc.)
-- Do not jump directly to implementation
+- Check whether a skill improves safety, evidence, or quality before acting
+- Use the maintenance fast path for clear, localized, reversible work
+- Escalate to discovery, specification, security, migration, or release workflows only for their stated conditions
+- Report unavailable capabilities and material verification gaps
 
 These rules are enforced via `AGENTS.md`.
 

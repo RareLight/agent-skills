@@ -7,6 +7,7 @@ risk: low
 requires: [repository-instructions]
 fallback: Apply the portable core and the maintenance fast path.
 outputs: [selected-skills, verification-plan]
+related_skills: []
 ---
 
 # Using Agent Skills
