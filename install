@@ -213,7 +213,7 @@ def main():
     # 5. Sync central resources to ~/.config/agent-skills/
     central_dir = "~/.config/agent-skills/"
     central_path = os.path.abspath(os.path.expanduser(central_dir))
-    resources_to_sync = ["references", "agents", "docs", "hooks"]
+    resources_to_sync = ["references", "agents", "docs", "hooks", "adapters"]
 
     if args.dry_run:
         print(f"\n{COLOR_YELLOW}--- DRY RUN MODE (No central resources changes will be written) ---{COLOR_RESET}")

@@ -1,30 +1,24 @@
 ---
 name: planning-and-task-breakdown
-description: Breaks work into ordered tasks. Use when you have a spec or clear requirements and need to break work into implementable tasks. Use when a task feels too large to start, when you need to estimate scope, or when parallel work is possible.
+description: Creates an ordered, verifiable plan for work with meaningful dependencies or parallelism. Use when scope spans components, migrations, risks, or independent work streams.
+applies_when: Execution order, ownership, or verification is not obvious.
+skip_when: A localized task can be safely completed as one coherent change.
+risk: medium
+requires: [repository-read]
+fallback: State a brief inline sequence and verification plan.
+outputs: [ordered-tasks, dependency-notes, verification-plan]
 ---
 
 # Planning and Task Breakdown
 
-## Core Workflow
-1. **Scoping**: Run in read-only mode first. Scan requirements, map component relationships, and identify risks. Do not implement code.
-2. **Graph Dependencies**: Map the system bottom-up (Database → API Contracts → Business Logic → UI client → Layouts). Build foundations first.
-3. **Slicing**: Slice tasks vertically (e.g. CRUD for Create → Read → Update) so each task results in a runnable, testable increment.
-4. **Task Structure**: Define each task with a Title, Description, Acceptance Criteria, Verification Commands, and touched files.
-5. **Checkpoints**: Order by risk and establish mandatory checkpoints (tests passing, clean builds, user review) every 2-3 tasks.
+1. Inspect the relevant system and identify contracts, dependencies, risks, and authority boundaries.
+2. Order work by dependency and risk; use vertical slices where they improve feedback.
+3. Describe each task with outcome, affected area, acceptance criteria, verification, and ownership when delegated.
+4. Parallelize only independent work; isolate concurrent writers.
+5. Add checkpoints for migrations, public contracts, external effects, and other high-risk decisions.
 
-## Sizing Rules
-- **Task Sizes**: Target Small (1-2 files) or Medium (3-5 files) tasks. 
-- **Decompose**: Split tasks if they take >2 hours, touch distinct subsystems (e.g., auth and payments), or require more than 3 bullet points of acceptance criteria.
+## Verification checklist
 
-## Parallelization Boundaries
-- **Independent**: Feature slices and unit tests can run in parallel.
-- **Sequential**: DB migrations and shared core state changes must run sequentially.
-- **Contract-First**: Define interfaces/types first to coordinate parallel streams.
-
-## Verification Checklist
-- [ ] Dependency hierarchy is mapped and foundation steps are scheduled first.
-- [ ] Every task has specific, testable acceptance criteria.
-- [ ] Every task includes a runnable verification command.
-- [ ] No task spans more than 5 files.
-- [ ] Checkpoints are scheduled between phases.
-- [ ] Human has reviewed and approved the plan document.
+- [ ] Dependencies and ordering are explicit where they matter.
+- [ ] Each task has proportionate acceptance evidence.
+- [ ] Task size is justified by cohesion and risk, not arbitrary file or time limits.

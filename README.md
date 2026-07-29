@@ -1,16 +1,16 @@
 # Agent Skills
 
-**Production-grade engineering skills for AI coding agents.**
+**Portable, risk-tiered engineering skills for AI coding agents.**
 
-Skills encode the workflows, quality gates, and best practices that senior engineers use when building software. These ones are packaged so AI agents follow them consistently across every phase of development.
+Skills encode optional workflows, evidence expectations, and safety boundaries for agents ranging from local models to tool-rich frontier systems.
 
 ---
 
 ## How Skills Activate
 
-Skills activate automatically based on what you're doing — designing an API triggers `api-and-interface-design`, building UI triggers `frontend-ui-engineering`, debugging triggers `debugging-and-error-recovery`, and so on. The `using-agent-skills` meta-skill discovers and invokes the right skill for the task at session start or when ambiguity arises.
+Skills are selected by task conditions, risk, and available capabilities. The `using-agent-skills` meta-skill chooses the smallest applicable workflow; localized reversible work uses the documented fast path.
 
-Each skill is a dense, imperative workflow with verification gates — not a reference doc or a generic prompt.
+Each skill is a dense, imperative workflow with proportional verification—not a mandatory lifecycle stage.
 
 ---
 
@@ -24,7 +24,7 @@ The installer reads configuration settings from [config.yaml](config.yaml) to de
 1. **Skills**: Synchronizes the `./skills/` directory to target agent paths (e.g., global targets like `~/.gemini/antigravity/skills/` and `~/.config/opencode/skills/`, and workspace-level targets like `./.cursor/rules/` and `./.github/skills/`).
    - *Note on Cursor*: Cursor rules are automatically copied as flat files (`target/<name>.md`) containing only the skill content, rather than folder structures.
    
-2. **Centralized Resources**: Copies reference folders (`references/`, `agents/`, `docs/`, `hooks/`) to a single global directory: `~/.config/agent-skills/`. All installed skills and configurations point back to this single source of truth to avoid duplication.
+2. **Centralized Resources**: Copies reference folders (`references/`, `agents/`, `docs/`, `hooks/`, `adapters/`) to a single global directory: `~/.config/agent-skills/`. The portable core and adapters remain available without embedding platform assumptions in skills.
 
 3. **Default Prompts**: Copies the global prompt rules (`GLOBAL-PROMPT.md`) to individual IDE default prompt paths, such as `~/.config/opencode/AGENTS.md` (OpenCode), `~/.gemini/GEMINI.md` (Gemini CLI / Google Antigravity), `./.windsurfrules` (Windsurf), and `./.github/copilot-instructions.md` (VS Code / Copilot).
 
@@ -116,9 +116,9 @@ Skills are plain Markdown — they work with any agent that accepts system promp
 
 ---
 
-## All 23 Skills
+## All 24 Skills
 
-The pack includes 23 skills total — 22 lifecycle skills plus the `using-agent-skills` meta-skill. Each skill is a dense, imperative workflow.
+The pack includes 24 skills total — 23 lifecycle skills plus the `using-agent-skills` meta-skill. Each skill has routing metadata, capability requirements, and a fallback.
 
 ### Meta - Discover which skill applies
 | Skill | Summary |
@@ -142,7 +142,7 @@ The pack includes 23 skills total — 22 lifecycle skills plus the `using-agent-
 |-------|---------|
 | [incremental-implementation](skills/incremental-implementation/SKILL.md) | Thin vertical slices implemented, tested, verified, and committed. |
 | [test-driven-development](skills/test-driven-development/SKILL.md) | Red-Green-Refactor testing workflow using a robust test pyramid. |
-| [context-engineering](skills/context-engineering/SKILL.md) | Feeding agents the right context (rules, packing, MCP) at the right time. |
+| [context-engineering](skills/context-engineering/SKILL.md) | Selecting task-relevant context and surfacing material uncertainty. |
 | [source-driven-development](skills/source-driven-development/SKILL.md) | Grounding and verifying framework decisions in official documentation. |
 | [doubt-driven-development](skills/doubt-driven-development/SKILL.md) | Adversarial fresh-context review of in-flight decisions. |
 | [frontend-ui-engineering](skills/frontend-ui-engineering/SKILL.md) | Responsive UI component architecture, styling, and WCAG accessibility. |
@@ -151,7 +151,7 @@ The pack includes 23 skills total — 22 lifecycle skills plus the `using-agent-
 ### Verify - Prove it works
 | Skill | Summary |
 |-------|---------|
-| [browser-testing-with-devtools](skills/browser-testing-with-devtools/SKILL.md) | Using Chrome DevTools MCP for live runtime validation and profiling. |
+| [browser-testing-with-devtools](skills/browser-testing-with-devtools/SKILL.md) | Browser runtime validation with capability-aware fallbacks. |
 | [debugging-and-error-recovery](skills/debugging-and-error-recovery/SKILL.md) | Five-step bug triage: reproduce, localize, reduce, fix, guard. |
 
 ### Review - Quality gates before merge
@@ -198,6 +198,14 @@ Quick-reference material that skills pull in when needed:
 
 ---
 
+## Portable architecture
+
+- `GLOBAL-PROMPT.md` is a compact portable core.
+- `docs/portable-core.md` defines authority, safety, and capability fallbacks.
+- `docs/routing-model.md` selects the smallest applicable skill and defines the maintenance fast path.
+- `adapters/` contain harness-specific paths, commands, and integration guidance.
+- `scripts/validate-skills.py` validates metadata and portable-skill boundaries.
+
 ## How Skills Work
 
 Every skill is a streamlined, high-density Markdown file with three sections:
@@ -209,7 +217,7 @@ Every skill is a streamlined, high-density Markdown file with three sections:
 **Key design choices:**
 
 - **Process, not prose.** Skills are workflows agents follow, not reference docs. Steps, not facts.
-- **Verification is non-negotiable.** "Seems right" is never sufficient. Every skill requires evidence.
+- **Verification is proportional.** Every material claim needs evidence appropriate to the changed surface, risk, and available tools.
 - **Token-conscious.** Every section justifies its inclusion. If removing it wouldn't change agent behavior, it's removed.
 - **Progressive disclosure.** `SKILL.md` is the entry point. Supporting references load only when needed.
 - **Cross-skill references.** Skills reference each other by name instead of duplicating content.
@@ -222,7 +230,7 @@ See [docs/skill-anatomy.md](docs/skill-anatomy.md) for the full format specifica
 
 ```
 agent-skills/
-├── skills/                            # 23 skills (22 lifecycle + 1 meta)
+├── skills/                            # 24 skills (23 lifecycle + 1 meta)
 │   ├── interview-me/                  #   Define
 │   ├── idea-refine/                   #   Define
 │   ├── spec-driven-development/       #   Define
@@ -246,10 +254,11 @@ agent-skills/
 │   ├── documentation-and-adrs/        #   Ship
 │   ├── shipping-and-launch/           #   Ship
 │   └── using-agent-skills/            #   Meta: how to use this pack
-├── agents/                            # 3 specialist personas
+├── agents/                            # 4 specialist personas
 ├── references/                        # 4 supplementary checklists
 ├── hooks/                             # Session lifecycle hooks
-├── .gemini/commands/                  # 7 slash commands (Gemini CLI)
+├── adapters/                          # Harness-specific integration guidance
+├── scripts/                           # Portable validation scripts
 └── docs/                              # Setup guides per tool
 ```
 

@@ -80,10 +80,9 @@ Install these as skills so they activate only when relevant:
 
 ### MCP Integration
 
-Many skills in this pack leverage [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) tools to interact with the environment. For example:
+Optional runtime integrations can use [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) tools when available. The portable skills also define fallbacks when these tools are absent. For example:
 
-- `browser-testing-with-devtools` uses the `chrome-devtools` MCP extension.
-- `performance-optimization` can benefit from performance-related MCP tools.
+- Browser and performance workflows can use compatible runtime-inspection tools.
 
 To enable these, ensure you have the relevant MCP extensions installed in your Gemini CLI / Google Antigravity configuration (`~/.gemini/config.json`).
 

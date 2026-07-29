@@ -1,30 +1,24 @@
 ---
 name: code-review-and-quality
-description: Conducts multi-axis code review. Use before merging any change. Use when reviewing code written by yourself, another agent, or a human. Use when you need to assess code quality across multiple dimensions before it enters the main branch.
+description: Reviews a scoped change for correctness, maintainability, security, performance, and verification evidence. Use before merge or when a user requests a code review.
+applies_when: A diff, change, or implementation needs an independent quality assessment.
+skip_when: No code or configuration change is in scope.
+risk: medium
+requires: [repository-read]
+fallback: Review available artifacts and state what could not be inspected or executed.
+outputs: [findings, verdict, verification-gaps]
 ---
 
 # Code Review and Quality
 
-## The Five-Axis Review
-Review every change prior to merge across five distinct axes:
-1. **Correctness**: Adheres strictly to specifications, gracefully manages error paths, and includes comprehensive testing.
-2. **Readability**: Simple, straightforward control flows without nested ternary chains, using descriptive, convention-aligned naming.
-3. **Architecture**: Fits codebase patterns, maintains clean module boundaries, has zero circular imports, and avoids premature abstractions.
-4. **Security**: Inputs are validated at boundaries, secrets are barred from commits and logging, and external payload sources are handled as untrusted.
-5. **Performance**: Avoids database N+1 queries, applies missing indexes, paginates list collections, and avoids blocking synchronous calls.
+1. Read the task, relevant contract, diff, and tests before judging implementation.
+2. Assess correctness, readability, architecture, security, performance, and change-specific compatibility risks.
+3. Report only evidence-backed findings with severity, location, impact, and an actionable recommendation.
+4. Separate blocking defects from optional improvements; “no findings” is a valid result.
+5. Do not impose arbitrary change-size, commit-style, or cleanup requirements absent project policy.
 
-## Sizing & Commits
-- **Small Batches**: Target ~100 line changes. Keep PRs tightly focused on a single logical concern. Split refactoring steps from feature work into separate PRs.
-- **Descriptive Commits**: The first line must use short, imperative verbs ("Fix task sorting"). The commit body must state *what* changed and *why*.
-- **Dead Code Hygiene**: Identify and propose removal of unreachable functions, unused exports, and orphan imports.
+## Verification checklist
 
-## Review Communication
-- **Severity Labels**: Tag comments explicitly with: `Critical` (blocks merge), `Important` (address or defer with reason), `Nit` (minor style/optional), or `FYI` (informational).
-- **Data-Driven Feedback**: Ground design and performance critiques in facts, standards, or profiling data rather than personal style preferences.
-- **Don't Soft-Pedal**: Clearly call out production-breaking logic or security bugs without sycophancy or softening concerns.
-
-## Verification Checklist
-- [ ] All flagged `Critical` issues are resolved.
-- [ ] Regression tests are included with all bug fixes.
-- [ ] Code builds, lints, and passes tests cleanly.
-- [ ] Dead code has been cleaned up.
+- [ ] Findings are scoped to the reviewed change and supported by evidence.
+- [ ] Verification evidence and gaps are reported.
+- [ ] Approval is withheld only for material unresolved risk.

@@ -72,9 +72,6 @@ Categorize every finding:
 ### Suggestions
 - [File:line] [Description]
 
-### What's Done Well
-- [Positive observation — always include at least one]
-
 ### Verification Story
 - Tests reviewed: [yes/no, observations]
 - Build verified: [yes/no]
@@ -87,7 +84,7 @@ Categorize every finding:
 2. Read the spec or task description before reviewing code
 3. Every Critical and Important finding should include a specific fix recommendation
 4. Don't approve code with Critical issues
-5. Acknowledge what's done well — specific praise motivates good practices
+5. Include positive observations only when they convey useful engineering evidence
 6. If you're uncertain about something, say so and suggest investigation rather than guessing
 
 ## Composition

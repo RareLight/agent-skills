@@ -19,7 +19,7 @@ git clone https://github.com/RareLight/agent-skills.git
 ### 2. Sync skills and resources (Recommended)
 
 Run the included `install` script. It reads settings from [config.yaml](../config.yaml) to automatically distribute assets on your machine:
-- **Centralized Resources**: Copies folders (`references/`, `agents/`, `docs/`, `hooks/`) to `~/.config/agent-skills/` as a single global source of truth. All synced skills and prompts point back to this location to keep duplication minimal.
+- **Centralized Resources**: Copies folders (`references/`, `agents/`, `docs/`, `hooks/`, `adapters/`) to `~/.config/agent-skills/` as a single global source of truth. Harness-specific instructions live in adapters; portable skills remain tool-neutral.
 - **IDE Target Skills**: Syncs `./skills/` to target directories:
   - Global paths: `~/.gemini/antigravity/skills/` (Gemini CLI / Google Antigravity) and `~/.config/opencode/skills/` (OpenCode).
   - Workspace paths: `./.cursor/rules/` (Cursor flat rules, e.g., `using-agent-skills.md`) and `./.github/skills/` (VS Code/Copilot folders).

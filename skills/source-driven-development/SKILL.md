@@ -1,25 +1,24 @@
 ---
 name: source-driven-development
-description: Grounds every implementation decision in official documentation. Use when you want authoritative, source-cited code free from outdated patterns. Use when building with any framework or library where correctness matters.
+description: Verifies unfamiliar or version-sensitive implementation decisions against authoritative sources. Use for unstable APIs, security-sensitive integrations, or when local evidence is insufficient.
+applies_when: Correctness depends on external API, standard, or dependency behavior that is uncertain or version-sensitive.
+skip_when: Existing project code, tests, and stable local contracts provide sufficient evidence.
+risk: medium
+requires: [dependency-metadata, network-optional]
+fallback: Identify the precise unverified assumption and avoid claiming source verification.
+outputs: [version-evidence, source-notes-or-gap]
 ---
 
 # Source-Driven Development
 
-## Objective
-- **Grounding**: Eliminate hallucinated APIs, outdated syntaxes, and legacy patterns. Always back framework-specific decisions with official, version-accurate documentation.
+1. Identify the exact dependency or standard version from local metadata.
+2. Consult authoritative version-appropriate sources when available and necessary.
+3. Prefer existing project conventions unless they conflict with a verified requirement.
+4. Record source links in the change summary, ADR, or user-facing handoff when they materially support a decision; do not add routine documentation URLs to code comments.
+5. When sources are unavailable, use conservative local evidence and label the remaining uncertainty.
 
-## The SDD Sequence
-1. **Detect Stack**: Parse the exact lock and dependency files (`package.json`, `Cargo.toml`, `pyproject.toml`) to identify precise framework versions before coding.
-2. **Fetch Documentation**: Retrieve specific, authoritative documentation sections (homepage docs, official blog changelogs, web standards on MDN). Reject StackOverflow, blog tutorials, or AI summaries.
-3. **Implement**: Write code conforming precisely to the version's API signatures. Surfacing conflicts immediately if existing project code violates official best practices.
-4. **Cite**: Document every framework pattern with a full, deep-linked URL to its official source in both code comments and conversation summaries.
+## Verification checklist
 
-## Implementation Rules
-- The `sdd-cache` hook (`~/.config/agent-skills/hooks/SDD-CACHE.md`) caches fetched documentation with HTTP revalidation — avoids redundant fetches without weakening freshness guarantees.
-- If official documentation is unreachable, annotate logic with `UNVERIFIED: based on memory/training data, verify before production.`
-
-## Verification Checklist
-- [ ] Framework and library versions are verified from dependencies.
-- [ ] Specific documentation pages are fetched and validated.
-- [ ] Code avoids deprecated patterns or mismatched signatures.
-- [ ] Implementations include deep-linked source URLs in comments.
+- [ ] The external dependency and version are identified when relevant.
+- [ ] Source claims are accurate and scoped.
+- [ ] Unavailable-source gaps are explicit.

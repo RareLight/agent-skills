@@ -24,12 +24,19 @@ skills/
 ---
 name: skill-name-with-hyphens
 description: Guides agents through [task/workflow]. Use when [specific trigger conditions].
+applies_when: A concise condition that activates the skill.
+skip_when: A concise condition that makes the skill unnecessary.
+risk: low | medium | high
+requires: [capability-or-context]
+fallback: Safe action when a required capability is unavailable.
+outputs: [artifact-or-evidence]
 ---
 ```
 
 **Rules:**
 - `name`: Lowercase, hyphen-separated. Must match the directory name.
 - `description`: Start with what the skill does in third person, then include one or more clear "Use when" trigger conditions. Include both *what* and *when*. Maximum 1024 characters.
+- Routing fields make skill selection possible without loading the body. Keep them concise and capability-based; do not name a specific harness or absolute installation path.
 
 **Why this matters:** Agents discover skills by reading descriptions. The description is injected into the system prompt, so it must tell the agent both what the skill provides and when to activate it. Do not summarize the workflow — if the description contains process steps, the agent may follow the summary instead of reading the full skill.
 
@@ -109,6 +116,7 @@ Required:
 - A `skills/<skill-name>/SKILL.md` file
 - Valid YAML frontmatter with `name` and `description`
 - A description that includes both what the skill does and when to use it
+- `applies_when`, `skip_when`, `risk`, `requires`, `fallback`, and `outputs` metadata
 
 Recommended:
 

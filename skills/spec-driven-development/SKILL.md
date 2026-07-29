@@ -1,40 +1,24 @@
 ---
 name: spec-driven-development
-description: Creates specs before coding. Use when starting a new project, feature, or significant change and no specification exists yet. Use when requirements are unclear, ambiguous, or only exist as a vague idea.
+description: Defines testable requirements for significant changes. Use when a change is public, cross-cutting, irreversible, high-risk, or materially ambiguous.
+applies_when: Requirements or compatibility decisions need a durable shared record.
+skip_when: A localized change has clear acceptance criteria and no material risk signal.
+risk: high
+requires: [writable-workspace]
+fallback: Record concise acceptance criteria and assumptions in the task handoff.
+outputs: [specification, acceptance-criteria, risk-decisions]
 ---
 
 # Spec-Driven Development
 
-## Objective & Posture
-- **Shared Source of Truth**: Establish a structured, version-controlled specification defining what is being built, why, and how we verify completion before writing functional code.
-- **Assumption Exposure**: State all technical and architectural assumptions (stack, browsers, database) before drafting the spec. Never fill in gaps silently.
+1. Classify the change and state why a durable specification is needed.
+2. Record objective, users, success criteria, constraints, compatibility/security/privacy implications, alternatives, and verification strategy.
+3. Use a lightweight specification for bounded changes; create a versioned document for public, multi-team, irreversible, or architectural changes.
+4. Seek approval when project policy requires it or before committing to material external or irreversible decisions.
+5. Hand implementation to planning only when dependencies or scope warrant it.
 
-## The 4-Phase Gated Workflow
-```
-SPECIFY (Human Approval) ──→ PLAN (Human Approval) ──→ TASKS (Human Approval) ──→ IMPLEMENT
-```
-*Do not proceed to the next phase until the current phase is fully reviewed and approved.*
+## Verification checklist
 
-### Phase 1: Specify
-Write a spec document saved to the repository covering:
-- **Objective**: Use cases, target audience, and reframed testable success criteria.
-- **Commands**: Explicit build, test, lint, and typecheck commands.
-- **Project Structure**: Folder structure and colocated test locations.
-- **Code Style**: Practical code snippet illustrating pattern design.
-- **Testing**: Framework, coverage, and test tier mapping.
-- **Boundaries**: Strictly outline Always, Ask First, and Never rules.
-
-### Phase 2: Plan
-Map dependencies, identify implementation sequence (foundations first), evaluate technical risks, and define checkpoints.
-
-### Phase 3: Tasks
-Decompose into Small/Medium vertical slices containing acceptance criteria, verification commands, and file targets.
-
-### Phase 4: Implement
-Execute task-by-task using `incremental-implementation` and `test-driven-development`.
-
-## Verification Checklist
-- [ ] Specification document covers all six core areas.
-- [ ] Success criteria are translated into specific, measurable thresholds (e.g., LCP < 2.5s).
-- [ ] Human reviewed and approved the spec file.
-- [ ] Spec is committed to version control prior to implementation.
+- [ ] Success criteria are measurable for the task's risk.
+- [ ] Material assumptions, authority boundaries, and rollback/compatibility needs are explicit.
+- [ ] The chosen document depth matches the change.

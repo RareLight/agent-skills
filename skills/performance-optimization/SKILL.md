@@ -1,33 +1,23 @@
 ---
 name: performance-optimization
-description: Optimizes application performance. Use when performance requirements exist, when you suspect performance regressions, or when Core Web Vitals or load times need improvement. Use when profiling reveals bottlenecks that need fixing.
+description: Improves measured performance bottlenecks without regressing behavior. Use when performance is a requirement, a regression is observed, or profiling identifies a bottleneck.
+applies_when: A measurable performance concern or budget exists.
+skip_when: No performance objective, regression, or evidence of a bottleneck exists.
+risk: medium
+requires: [profiling-tools-optional]
+fallback: Use available timing, query, bundle, or static evidence and state measurement limits.
+outputs: [baseline, change, post-change-evidence]
 ---
 
 # Performance Optimization
 
-## Core Workflow
-1. **Measure**: Gather baseline metrics. Establish synthetic (Lighthouse, DevTools) and real-user benchmarks.
-2. **Identify**: Isolate the actual bottleneck from profiling data (don't guess).
-3. **Fix**: Address the specific root bottleneck using proven patterns.
-4. **Verify**: Re-measure under identical conditions to prove improvement.
-5. **Guard**: Integrate performance checks or size budgets into CI to prevent regressions.
+1. Define the user or system metric, workload, and baseline.
+2. Identify the bottleneck with profiling or the strongest available evidence; do not optimize by stereotype.
+3. Apply the smallest change that addresses it and preserve semantics.
+4. Re-measure under comparable conditions and add a budget or regression guard when cost-effective.
 
-## Core Web Vitals Targets
-- **LCP** (Largest Contentful Paint): ≤ 2.5s
-- **INP** (Interaction to Next Paint): ≤ 200ms
-- **CLS** (Cumulative Layout Shift): ≤ 0.1
+## Verification checklist
 
-## Common Performance Patterns
-- **Database Optimization**: Prevent N+1 queries by using JOINs or eager loading (`include` / `select_related`). Apply missing indexes to frequently queried fields. Paginate lists.
-- **Frontend Assets**: Provide explicit `width`/`height` dimensions for images to avoid CLS. Compress and lazy-load below-the-fold media.
-- **Bundle Optimization**: Use lazy loading (`React.lazy`, dynamic `import()`) for heavy components and routes. Verify bundle budgets in CI.
-- **DOM & Threading**: Batch DOM writes inside `requestAnimationFrame`. Debounce expensive scroll/resize event handlers. Avoid blocking the async backend event loop with sync operations.
-- **Caching Strategy**: Cache slow, static, or rarely modified calculations. Employ robust `Cache-Control` headers.
-- **Supplemental Reference**: `~/.config/agent-skills/references/performance-checklist.md` — detailed checklist with Core Web Vitals targets and measurement commands.
-
-## Verification Checklist
-- [ ] Profiling baseline is recorded and contrasted with post-fix timing (with specific numbers).
-- [ ] The true bottleneck has been identified and corrected.
-- [ ] No N+1 queries or un-paginated requests have been added.
-- [ ] Core Web Vitals are within "Good" bounds.
-- [ ] Existing functionality and test cases are fully preserved.
+- [ ] Baseline and post-change evidence are comparable.
+- [ ] The chosen optimization addresses an identified bottleneck.
+- [ ] Applicable project budgets, not universal web metrics, are respected.
